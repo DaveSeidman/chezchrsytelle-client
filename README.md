@@ -20,6 +20,8 @@ Vite + React frontend for the Chez Chrystelle website.
 
 `public/404.html` stores the original pathname and redirects to `/` so BrowserRouter can restore direct links on page load.
 
+The Vite config uses a relative asset base so the same build can work both under the GitHub Pages repo URL and later under the custom domain root.
+
 ## Local + production envs
 
 - Local frontend example: `VITE_API_URL=http://localhost:8000`

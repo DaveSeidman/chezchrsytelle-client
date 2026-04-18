@@ -6,9 +6,18 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import './index.scss';
 
+function getRouterBasename() {
+  if (window.location.hostname.endsWith('github.io')) {
+    const [, repoName] = window.location.pathname.split('/');
+    return repoName ? `/${repoName}` : '/';
+  }
+
+  return '/';
+}
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={getRouterBasename()}>
       <AuthProvider>
         <App />
       </AuthProvider>

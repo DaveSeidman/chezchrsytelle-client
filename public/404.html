@@ -7,8 +7,15 @@
     <script>
       (function redirectToSpa() {
         var redirect = window.location.pathname + window.location.search + window.location.hash;
+        var pathParts = window.location.pathname.split('/').filter(Boolean);
+        var basePath = '/';
+
+        if (window.location.hostname.endsWith('github.io') && pathParts.length > 0) {
+          basePath = '/' + pathParts[0] + '/';
+        }
+
         window.sessionStorage.setItem('gh-pages-redirect', redirect);
-        window.location.replace(window.location.origin + '/');
+        window.location.replace(window.location.origin + basePath);
       })();
     </script>
   </head>
