@@ -1,0 +1,26 @@
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  background: rgba(47, 42, 37, 0.08);
+}
+
+.status-pill--pending {
+  background: #f2dfb5;
+}
+
+.status-pill--confirmed,
+.status-pill--ready {
+  background: #d3e7d8;
+}
+
+.status-pill--completed {
+  background: #d8e3ef;
+}
+
+.status-pill--cancelled {
+  background: #efcec6;
+}

@@ -1,0 +1,24 @@
+.section-page {
+  padding: 5rem 0 0;
+}
+
+.section-page__header {
+  padding: 0 0 1rem;
+}
+
+.section-page__eyebrow {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+.section-page__header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+
+.section-page__body {
+  padding: 1.5rem;
+}

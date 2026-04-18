@@ -1,0 +1,37 @@
+.contact-section {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+}
+
+.contact-section__aside {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.contact-section__aside p,
+.contact-section__message {
+  margin: 0;
+}
+
+.contact-section__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.contact-section__checkbox {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.contact-section__checkbox input {
+  width: auto;
+}
+
+@media (max-width: 760px) {
+  .contact-section {
+    grid-template-columns: 1fr;
+  }
+}

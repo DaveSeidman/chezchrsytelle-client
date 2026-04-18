@@ -1,0 +1,28 @@
+.admin-users__table {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-users__row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(100px, 140px));
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.admin-users__row p {
+  margin: 0.25rem 0 0;
+}
+
+.admin-users__row input[type='checkbox'] {
+  width: auto;
+}
+
+@media (max-width: 900px) {
+  .admin-users__row {
+    grid-template-columns: 1fr;
+  }
+}

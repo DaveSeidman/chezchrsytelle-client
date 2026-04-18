@@ -1,0 +1,33 @@
+.products-section__controls {
+  max-width: 20rem;
+}
+
+.products-section__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.products-section__card {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+}
+
+.products-section__card h3,
+.products-section__card p {
+  margin: 0;
+}
+
+.products-section__meta,
+.products-section__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.products-section__footer {
+  margin-top: 1rem;
+  align-items: baseline;
+}

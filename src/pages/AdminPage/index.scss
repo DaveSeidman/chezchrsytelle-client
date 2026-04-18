@@ -1,0 +1,44 @@
+.admin-page {
+  padding: 2rem 0 4rem;
+}
+
+.admin-page__header,
+.admin-page__header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-page__layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.admin-page__nav,
+.admin-page__content {
+  padding: 1rem;
+}
+
+.admin-page__nav {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.admin-page__nav a {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.9rem;
+}
+
+.admin-page__nav a.is-active {
+  background: rgba(139, 94, 60, 0.12);
+}
+
+@media (max-width: 900px) {
+  .admin-page__layout {
+    grid-template-columns: 1fr;
+  }
+}

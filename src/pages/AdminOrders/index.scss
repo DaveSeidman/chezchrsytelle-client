@@ -1,0 +1,30 @@
+.admin-orders__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-orders__card {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.admin-orders__top,
+.admin-orders__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.admin-orders__card p,
+.admin-orders__card ul {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .admin-orders__top,
+  .admin-orders__bottom {
+    display: grid;
+  }
+}

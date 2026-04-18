@@ -1,0 +1,44 @@
+.admin-stores__editor,
+.admin-stores__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-stores__products {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.admin-stores__products label,
+.admin-stores__checkbox {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.admin-stores__editor-actions,
+.admin-stores__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-stores__products input,
+.admin-stores__checkbox input {
+  width: auto;
+}
+
+.admin-stores__card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+}
+
+.admin-stores__card p {
+  margin: 0.25rem 0 0;
+}

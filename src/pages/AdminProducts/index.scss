@@ -1,0 +1,41 @@
+.admin-products__create,
+.admin-products__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-products__editor-actions,
+.admin-products__inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-products__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.admin-products__card p {
+  margin: 0.25rem 0 0;
+}
+
+.admin-products__inline input {
+  width: 7rem;
+}
+
+.admin-products__checkbox {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-products__checkbox input {
+  width: auto;
+}

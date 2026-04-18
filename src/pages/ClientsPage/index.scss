@@ -1,0 +1,30 @@
+.clients-page {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.clients-page__card {
+  padding: 2rem;
+}
+
+.clients-page__card h1,
+.clients-page__card p {
+  margin-top: 0;
+}
+
+.clients-page__status-row,
+.clients-page__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.clients-page__link {
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+}
