@@ -13,13 +13,17 @@
 .admin-page__layout {
   display: grid;
   grid-template-columns: 220px 1fr;
-  gap: 1rem;
+  gap: 1.25rem;
   margin-top: 1.5rem;
 }
 
 .admin-page__nav,
 .admin-page__content {
-  padding: 1rem;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 251, 245, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 .admin-page__nav {
@@ -29,12 +33,14 @@
 }
 
 .admin-page__nav a {
-  padding: 0.7rem 0.9rem;
-  border-radius: 0.9rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 1rem;
+  color: var(--text-muted);
 }
 
 .admin-page__nav a.is-active {
-  background: rgba(139, 94, 60, 0.12);
+  background: rgba(31, 106, 82, 0.12);
+  color: var(--accent-strong);
 }
 
 @media (max-width: 900px) {

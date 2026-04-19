@@ -4,15 +4,17 @@
 
 .products-section__grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .products-section__card {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--border);
+  padding: 1.15rem;
+  border-radius: 1.3rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(244, 235, 220, 0.58));
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow: var(--shadow-soft);
 }
 
 .products-section__card h3,
@@ -30,4 +32,8 @@
 .products-section__footer {
   margin-top: 1rem;
   align-items: baseline;
+}
+
+.products-section__footer strong {
+  color: var(--accent-strong);
 }

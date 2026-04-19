@@ -5,6 +5,18 @@ import { useEffect, useState } from 'react';
 import { apiRequest } from '../../services/api';
 import type { User } from '../../types/api';
 
+function getReviewPriority(user: User) {
+  if (user.isAdmin) {
+    return 2;
+  }
+
+  if (user.status === 'pending') {
+    return 0;
+  }
+
+  return 1;
+}
+
 export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [message, setMessage] = useState('');
@@ -31,24 +43,40 @@ export default function AdminUsers() {
     <div className="admin-users stack">
       <div>
         <h2>Users</h2>
-        <p>Approve clients, grant admin access, and adjust user-specific markup.</p>
+        <p>Review new signups, approve or deny access, grant admin access, and adjust user-specific markup.</p>
       </div>
       {message ? <p>{message}</p> : null}
       <div className="admin-users__table">
-        {users.map((user) => (
+        {[...users]
+          .sort((left, right) => {
+            const priorityDifference = getReviewPriority(left) - getReviewPriority(right);
+
+            if (priorityDifference !== 0) {
+              return priorityDifference;
+            }
+
+            return right.createdAt.localeCompare(left.createdAt);
+          })
+          .map((user) => (
           <div className="admin-users__row" key={user._id}>
             <div>
               <strong>{user.displayName}</strong>
               <p>{user.email}</p>
             </div>
-            <label>
-              Approved
-              <input
-                checked={user.isApproved}
-                onChange={(event) => updateUser(user._id, { isApproved: event.target.checked })}
-                type="checkbox"
-              />
-            </label>
+            <div className="admin-users__status">
+              <span>Status: {user.isAdmin ? 'approved' : user.status}</span>
+              <div className="admin-users__actions">
+                <button onClick={() => updateUser(user._id, { status: 'approved' })} type="button">
+                  Approve
+                </button>
+                <button onClick={() => updateUser(user._id, { status: 'denied' })} type="button">
+                  Deny
+                </button>
+                <button onClick={() => updateUser(user._id, { status: 'pending' })} type="button">
+                  Reset
+                </button>
+              </div>
+            </div>
             <label>
               Admin
               <input

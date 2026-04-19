@@ -1,3 +1,76 @@
 .admin-config {
   max-width: 46rem;
 }
+
+.admin-config__day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 1rem;
+}
+
+.admin-config__day {
+  min-height: 3.1rem;
+  padding: 0.75rem 0.5rem;
+  border: none;
+  border-right: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-muted);
+  box-shadow: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-config__day.is-active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: #f8fff9;
+  border-color: transparent;
+}
+
+.admin-config__day:first-child {
+  border-radius: 1rem 0 0 1rem;
+}
+
+.admin-config__day:last-child {
+  border-right: none;
+  border-radius: 0 1rem 1rem 0;
+}
+
+@media (max-width: 640px) {
+  .admin-config__day-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-radius: 1rem;
+  }
+
+  .admin-config__day {
+    border-right: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+  }
+
+  .admin-config__day:nth-child(4n) {
+    border-right: none;
+  }
+
+  .admin-config__day:nth-last-child(-n + 3) {
+    border-bottom: none;
+  }
+
+  .admin-config__day:first-child {
+    border-radius: 1rem 0 0 0;
+  }
+
+  .admin-config__day:nth-child(4) {
+    border-radius: 0 1rem 0 0;
+  }
+
+  .admin-config__day:nth-child(5) {
+    border-radius: 0 0 0 1rem;
+  }
+
+  .admin-config__day:last-child {
+    border-radius: 0 0 1rem 0;
+  }
+}

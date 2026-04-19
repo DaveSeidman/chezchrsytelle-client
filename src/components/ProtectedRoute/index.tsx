@@ -27,7 +27,7 @@ export default function ProtectedRoute({ children, requireAdmin = false, require
     return <Navigate to="/clients" replace />;
   }
 
-  if (requireApproved && !user.isApproved && !user.isAdmin) {
+  if (requireApproved && user.status !== 'approved' && !user.isApproved && !user.isAdmin) {
     return <Navigate to="/clients" replace />;
   }
 

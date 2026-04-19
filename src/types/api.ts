@@ -6,6 +6,7 @@ export type User = {
   photoUrl: string;
   isAdmin: boolean;
   isApproved: boolean;
+  status: 'pending' | 'approved' | 'denied';
   markupAmount: number;
   createdAt: string;
   updatedAt: string;
@@ -43,6 +44,7 @@ export type Config = {
   orderThanksMessage: string;
   contactEmail: string;
   orderNotificationEmails: string[];
+  signupNotificationEmails: string[];
 };
 
 export type OrderStatus = 'pending' | 'confirmed' | 'ready' | 'completed' | 'cancelled';
@@ -81,6 +83,7 @@ export type Order = {
       };
   fulfillmentDate: string;
   status: OrderStatus;
+  deleted: boolean;
   lineItems: OrderLineItem[];
   notes: string;
   totals: {

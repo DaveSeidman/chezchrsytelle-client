@@ -1,17 +1,25 @@
 :root {
   color-scheme: light;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   line-height: 1.5;
-  color: #2f2a25;
-  background: #f7f0e4;
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: #fffdf8;
-  --border: rgba(47, 42, 37, 0.12);
-  --accent: #8b5e3c;
-  --accent-soft: #ead8c4;
-  --success: #335c45;
-  --danger: #8c3f2d;
-  --shadow: 0 18px 45px rgba(47, 42, 37, 0.08);
+  color: #243126;
+  background: #f7efe1;
+  --surface: rgba(255, 251, 245, 0.84);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --surface-muted: rgba(244, 235, 220, 0.72);
+  --border: rgba(36, 49, 38, 0.12);
+  --border-strong: rgba(36, 49, 38, 0.2);
+  --accent: #1f6a52;
+  --accent-strong: #154a39;
+  --accent-soft: #d8ebdf;
+  --highlight: #cf7a34;
+  --success: #2c6a4d;
+  --danger: #9b4a34;
+  --text-muted: rgba(36, 49, 38, 0.72);
+  --shadow: 0 24px 60px rgba(48, 35, 23, 0.11);
+  --shadow-soft: 0 10px 30px rgba(48, 35, 23, 0.07);
+  --radius-card: 1.75rem;
 }
 
 * {
@@ -20,14 +28,17 @@
 
 html {
   scroll-behavior: auto;
+  background:
+    radial-gradient(circle at top left, rgba(222, 239, 230, 0.85), transparent 30%),
+    radial-gradient(circle at top right, rgba(255, 219, 185, 0.6), transparent 28%),
+    linear-gradient(180deg, #fbf5ea 0%, #f4eadb 100%);
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 40%),
-    linear-gradient(180deg, #f6efe4 0%, #f1e5d5 100%);
+  min-height: 100vh;
+  background: transparent;
 }
 
 body,
@@ -37,6 +48,17 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+body,
+p,
+li,
+label,
+input,
+select,
+textarea,
+button {
+  letter-spacing: 0.01em;
 }
 
 button,
@@ -58,28 +80,43 @@ input,
 select,
 textarea {
   width: 100%;
-  padding: 0.8rem 0.9rem;
+  padding: 0.92rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(31, 106, 82, 0.45);
+  box-shadow: 0 0 0 4px rgba(31, 106, 82, 0.12);
 }
 
 button {
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border-strong);
+  padding: 0.82rem 1.28rem;
   background: var(--surface-strong);
-  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+  box-shadow: var(--shadow-soft);
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
 button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(47, 42, 37, 0.25);
+  transform: translateY(-2px);
+  border-color: rgba(36, 49, 38, 0.26);
+  box-shadow: 0 14px 24px rgba(48, 35, 23, 0.12);
 }
 
 button.primary {
-  background: var(--accent);
-  color: #fff8ef;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: #f8fff9;
+  border-color: transparent;
+}
+
+button.primary:hover {
   border-color: transparent;
 }
 
@@ -87,6 +124,7 @@ button.linkish {
   background: transparent;
   border: none;
   padding: 0;
+  box-shadow: none;
 }
 
 .page-shell {
@@ -96,9 +134,10 @@ button.linkish {
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
 }
 
 .field-grid {
@@ -110,4 +149,34 @@ button.linkish {
 .stack {
   display: grid;
   gap: 1rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+p,
+small,
+label {
+  color: var(--text-muted);
+}
+
+label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+::selection {
+  background: rgba(31, 106, 82, 0.2);
 }

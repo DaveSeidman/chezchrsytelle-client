@@ -1,17 +1,19 @@
 .home-section {
   display: grid;
-  gap: 1.5rem;
+  gap: 2rem;
   grid-template-columns: 1.4fr 1fr;
 }
 
 .home-section__copy {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
+  align-content: start;
 }
 
 .home-section__copy p {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  max-width: 38rem;
 }
 
 .home-section__feature {
@@ -21,9 +23,11 @@
 }
 
 .home-section__feature span {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(139, 94, 60, 0.12), rgba(255, 255, 255, 0.75));
+  padding: 1.1rem 1.15rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: linear-gradient(135deg, rgba(207, 122, 52, 0.14), rgba(216, 235, 223, 0.74));
+  box-shadow: var(--shadow-soft);
 }
 
 @media (max-width: 760px) {

@@ -30,6 +30,7 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
   const [quantities, setQuantities] = useState<OrderQuantities>({});
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmittedOrder, setHasSubmittedOrder] = useState(false);
 
   useEffect(() => {
     const nextQuantities: OrderQuantities = {};
@@ -42,7 +43,8 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
   }, [products]);
 
   const selectedStore = stores.find((store) => store._id === selectedStoreId) ?? null;
-  const isApproved = Boolean(user && (user.isApproved || user.isAdmin));
+  const isApproved = Boolean(user && (user.status === 'approved' || user.isApproved || user.isAdmin));
+  const isDenied = Boolean(user && user.status === 'denied' && !user.isAdmin);
   const total = products.reduce((sum, product) => {
     const quantity = quantities[product._id] ?? 0;
     return sum + (product.price + (user?.markupAmount ?? 0)) * quantity;
@@ -69,10 +71,12 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
       });
 
       setMessage(config?.orderThanksMessage ?? 'Thank you for your order!');
+      setHasSubmittedOrder(true);
       setNotes('');
       setQuantities(Object.fromEntries(products.map((product) => [product._id, 0])));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Order failed');
+      setHasSubmittedOrder(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,21 +87,39 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
       <div className="order-section stack">
         {!user ? (
           <div className="order-section__notice">
-            <p>Browse the menu above, then sign in if you have been approved for client ordering.</p>
+            <p>Browse the menu above, then sign up or sign in with Google to request access to client ordering.</p>
             <button className="primary" onClick={login} type="button">
-              Sign in with Google
+              Sign up or sign in with Google
             </button>
           </div>
         ) : null}
 
-        {user && !isApproved ? (
+        {user && !isApproved && !isDenied ? (
           <div className="order-section__notice">
             <p>Your account is pending approval. Once approved, ordering will unlock automatically.</p>
             <Link to="/clients">Go to client account</Link>
           </div>
         ) : null}
 
-        {user && isApproved ? (
+        {user && isDenied ? (
+          <div className="order-section__notice">
+            <p>Your signup request was declined. Reach out through the contact form if you think this was a mistake.</p>
+            <Link to="/contact">Contact us</Link>
+          </div>
+        ) : null}
+
+        {user && isApproved && hasSubmittedOrder ? (
+          <div className="order-section__success">
+            <p className="order-section__message">{message}</p>
+            <p>We&apos;ll confirm it shortly and email you if we need anything else.</p>
+            <div className="order-section__success-actions">
+              <Link to="/clients/orders">View my orders</Link>
+              <Link to="/">Back to homepage</Link>
+            </div>
+          </div>
+        ) : null}
+
+        {user && isApproved && !hasSubmittedOrder ? (
           <form className="order-section__form stack" onSubmit={submitOrder}>
             <div className="field-grid">
               <label>

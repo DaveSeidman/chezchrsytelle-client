@@ -10,6 +10,8 @@ export default function ClientsPage() {
   const { isLoading, login, logout, user } = useAuth();
   const [searchParams] = useSearchParams();
   const error = searchParams.get('error');
+  const isApproved = Boolean(user && (user.status === 'approved' || user.isApproved || user.isAdmin));
+  const isDenied = Boolean(user && user.status === 'denied' && !user.isAdmin);
   const errorMessage =
     error === 'google_auth_not_configured'
       ? 'Google auth is not configured yet for this environment.'
@@ -29,9 +31,9 @@ export default function ClientsPage() {
         {isLoading ? <p>Loading account...</p> : null}
         {!isLoading && !user ? (
           <div className="stack">
-            <p>Approved clients can sign in with Google to place orders and review past activity.</p>
+            <p>Stores can sign up here with Google to request access to the weekly salad ordering portal.</p>
             <button className="primary" onClick={login} type="button">
-              Sign in with Google
+              Sign up for salads
             </button>
             {isDevLoginEnabled() ? (
               <button onClick={startDevLogin} type="button">
@@ -48,18 +50,20 @@ export default function ClientsPage() {
             </p>
             <div className="clients-page__status-row">
               <span>Status</span>
-              <StatusPill>{user.isApproved || user.isAdmin ? 'confirmed' : 'pending'}</StatusPill>
+              <StatusPill>{user.isAdmin ? 'confirmed' : user.status}</StatusPill>
             </div>
             <p>
-              {user.isApproved || user.isAdmin
+              {isApproved
                 ? 'You can place orders from the Order section on the homepage and review them below.'
-                : 'Your account is waiting for admin approval before ordering unlocks.'}
+                : isDenied
+                  ? 'Your request was declined. Reach out through the contact form if you would like us to review it again.'
+                  : 'Thanks for signing up. Your account is waiting for admin approval before ordering unlocks.'}
             </p>
             <div className="clients-page__actions">
               <Link className="clients-page__link" to="/">
                 Back to homepage
               </Link>
-              {(user.isApproved || user.isAdmin) ? (
+              {isApproved ? (
                 <Link className="clients-page__link" to="/clients/orders">
                   View my orders
                 </Link>

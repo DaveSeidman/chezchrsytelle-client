@@ -16,6 +16,13 @@ const emptyProduct = {
   sortOrder: 0
 };
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(value);
+}
+
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [draft, setDraft] = useState(emptyProduct);
@@ -92,6 +99,13 @@ export default function AdminProducts() {
       </div>
 
       <div className="admin-products__create stack">
+        <div className="admin-products__editor-header">
+          <div>
+            <strong>{editingProductId ? 'Editing product' : 'New product draft'}</strong>
+            <p>Use precise pricing here so each store sees clean client-ready totals.</p>
+          </div>
+          <span className="admin-products__price-badge">{formatCurrency(draft.price)}</span>
+        </div>
         <div className="field-grid">
           <label>
             Name
@@ -142,18 +156,25 @@ export default function AdminProducts() {
       <div className="admin-products__list">
         {products.map((product) => (
           <article className="admin-products__card" key={product._id}>
-            <div>
+            <div className="admin-products__card-copy">
               <strong>{product.name}</strong>
+              <div className="admin-products__meta">
+                <span>{product.size}</span>
+                <span>{formatCurrency(product.price)}</span>
+              </div>
               <p>{product.ingredients.join(', ')}</p>
             </div>
             <div className="admin-products__inline">
-              <input
-                defaultValue={product.price}
-                min="0"
-                onBlur={(event) => updateProduct(product, { price: Number(event.target.value) })}
-                step="0.01"
-                type="number"
-              />
+              <label className="admin-products__price-field">
+                <span>Price</span>
+                <input
+                  defaultValue={product.price.toFixed(2)}
+                  min="0"
+                  onBlur={(event) => updateProduct(product, { price: Number(event.target.value) })}
+                  step="0.01"
+                  type="number"
+                />
+              </label>
               <label className="admin-products__checkbox">
                 <input
                   checked={product.isActive}

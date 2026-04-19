@@ -4,6 +4,41 @@
   gap: 1rem;
 }
 
+.admin-products__create {
+  padding: 1.35rem;
+  border-radius: 1.4rem;
+  background: rgba(255, 251, 245, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-products__editor-header,
+.admin-products__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-products__editor-header p,
+.admin-products__meta {
+  margin: 0.25rem 0 0;
+}
+
+.admin-products__meta {
+  color: var(--accent-strong);
+  font-size: 0.92rem;
+}
+
+.admin-products__price-badge {
+  padding: 0.65rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(31, 106, 82, 0.1);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
 .admin-products__editor-actions,
 .admin-products__inline {
   display: flex;
@@ -17,17 +52,31 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 1.25rem;
+  background: rgba(255, 251, 245, 0.72);
+  box-shadow: var(--shadow-soft);
 }
 
 .admin-products__card p {
   margin: 0.25rem 0 0;
 }
 
-.admin-products__inline input {
-  width: 7rem;
+.admin-products__card-copy {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-products__price-field {
+  width: 8rem;
+}
+
+.admin-products__price-field span {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .admin-products__checkbox {
@@ -38,4 +87,10 @@
 
 .admin-products__checkbox input {
   width: auto;
+}
+
+@media (max-width: 800px) {
+  .admin-products__card {
+    display: grid;
+  }
 }

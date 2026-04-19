@@ -5,12 +5,23 @@ import { useEffect, useState } from 'react';
 import { apiRequest } from '../../services/api';
 import type { Config } from '../../types/api';
 
+const weekdayOptions = [
+  { value: 0, label: 'Sun' },
+  { value: 1, label: 'Mon' },
+  { value: 2, label: 'Tue' },
+  { value: 3, label: 'Wed' },
+  { value: 4, label: 'Thu' },
+  { value: 5, label: 'Fri' },
+  { value: 6, label: 'Sat' }
+] as const;
+
 const emptyConfig: Config = {
   deliveryDays: [1, 2, 3, 4, 5, 6],
   lastOrderTime: '20:00',
   orderThanksMessage: 'Thank you for your order!',
-  contactEmail: 'chrystelleseidman@gmail.com',
-  orderNotificationEmails: []
+  contactEmail: 'hello@chezchrystelle.com',
+  orderNotificationEmails: ['hello@chezchrystelle.com'],
+  signupNotificationEmails: ['hello@chezchrystelle.com']
 };
 
 export default function AdminConfig() {
@@ -28,13 +39,27 @@ export default function AdminConfig() {
     void loadConfig();
   }, []);
 
+  function toggleDeliveryDay(day: number) {
+    setConfig((current) => {
+      const nextDays = current.deliveryDays.includes(day)
+        ? current.deliveryDays.filter((value) => value !== day)
+        : [...current.deliveryDays, day];
+
+      return {
+        ...current,
+        deliveryDays: nextDays.sort((left, right) => left - right)
+      };
+    });
+  }
+
   async function saveConfig() {
     await apiRequest('/api/admin/config', {
       method: 'PUT',
       body: JSON.stringify({
         ...config,
         deliveryDays: config.deliveryDays,
-        orderNotificationEmails: config.orderNotificationEmails
+        orderNotificationEmails: config.orderNotificationEmails,
+        signupNotificationEmails: config.signupNotificationEmails
       })
     });
 
@@ -45,23 +70,28 @@ export default function AdminConfig() {
     <div className="admin-config stack">
       <div>
         <h2>General config</h2>
-        <p>Control scheduling rules, thank-you copy, and who receives admin order emails.</p>
+        <p>Control scheduling rules, thank-you copy, and who receives signup and order emails.</p>
       </div>
       <div className="field-grid">
         <label>
           Delivery days
-          <input
-            onChange={(event) =>
-              setConfig((current) => ({
-                ...current,
-                deliveryDays: event.target.value
-                  .split(',')
-                  .map((value) => Number(value.trim()))
-                  .filter((value) => !Number.isNaN(value))
-              }))
-            }
-            value={config.deliveryDays.join(', ')}
-          />
+          <div className="admin-config__day-grid" role="group" aria-label="Delivery days">
+            {weekdayOptions.map((day) => {
+              const isActive = config.deliveryDays.includes(day.value);
+
+              return (
+                <button
+                  aria-pressed={isActive}
+                  className={`admin-config__day ${isActive ? 'is-active' : ''}`}
+                  key={day.value}
+                  onClick={() => toggleDeliveryDay(day.value)}
+                  type="button"
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
         </label>
         <label>
           Last order time
@@ -96,6 +126,21 @@ export default function AdminConfig() {
             }))
           }
           value={config.orderNotificationEmails.join(', ')}
+        />
+      </label>
+      <label>
+        Signup notification emails
+        <input
+          onChange={(event) =>
+            setConfig((current) => ({
+              ...current,
+              signupNotificationEmails: event.target.value
+                .split(',')
+                .map((value) => value.trim())
+                .filter(Boolean)
+            }))
+          }
+          value={config.signupNotificationEmails.join(', ')}
         />
       </label>
       <button className="primary" onClick={saveConfig} type="button">

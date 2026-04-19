@@ -1,16 +1,16 @@
 .section-page {
-  padding: 5rem 0 0;
+  padding: 4.5rem 0 0;
 }
 
 .section-page__header {
-  padding: 0 0 1rem;
+  padding: 0 0 1.1rem;
 }
 
 .section-page__eyebrow {
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   font-size: 0.78rem;
-  color: var(--accent);
+  color: var(--highlight);
   margin: 0 0 0.5rem;
 }
 
@@ -20,5 +20,8 @@
 }
 
 .section-page__body {
-  padding: 1.5rem;
+  padding: 1.85rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08)),
+    var(--surface);
 }

@@ -45,7 +45,7 @@ export default function NavBar({ activeSection, onNavigate, onClientsClick, user
             </Link>
           ) : null}
           <button className="primary" onClick={onClientsClick} type="button">
-            {user ? 'Clients' : 'Client Login'}
+            {user ? 'Client Account' : 'Sign up for salads'}
           </button>
         </div>
       </div>
