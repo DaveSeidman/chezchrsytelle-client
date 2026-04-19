@@ -10,10 +10,7 @@ import SectionPage from '../SectionPage';
 
 type OrderProps = {
   config: Config | null;
-  onStoreChange: (storeId: string) => void;
-  products: Product[];
   sectionRef: (element: HTMLElement | null) => void;
-  selectedStoreId: string;
   stores: Store[];
 };
 
@@ -23,14 +20,16 @@ function getTodayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export default function Order({ config, onStoreChange, products, sectionRef, selectedStoreId, stores }: OrderProps) {
+export default function Order({ config, sectionRef, stores }: OrderProps) {
   const { login, user } = useAuth();
   const [fulfillmentDate, setFulfillmentDate] = useState(getTodayString());
   const [notes, setNotes] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState<OrderQuantities>({});
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmittedOrder, setHasSubmittedOrder] = useState(false);
+  const [selectedStoreId, setSelectedStoreId] = useState('');
 
   useEffect(() => {
     const nextQuantities: OrderQuantities = {};
@@ -42,12 +41,39 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
     setQuantities(nextQuantities);
   }, [products]);
 
+  useEffect(() => {
+    if (!stores.length) {
+      setSelectedStoreId('');
+      setProducts([]);
+      return;
+    }
+
+    if (!stores.some((store) => store._id === selectedStoreId)) {
+      setSelectedStoreId(stores[0]._id);
+    }
+  }, [selectedStoreId, stores]);
+
+  useEffect(() => {
+    if (!selectedStoreId) {
+      setProducts([]);
+      return;
+    }
+
+    async function loadProducts() {
+      const fetchedProducts = await apiRequest<Product[]>(`/api/products/public?storeId=${selectedStoreId}`);
+      setProducts(fetchedProducts);
+    }
+
+    void loadProducts();
+  }, [selectedStoreId]);
+
   const selectedStore = stores.find((store) => store._id === selectedStoreId) ?? null;
   const isApproved = Boolean(user && (user.status === 'approved' || user.isApproved || user.isAdmin));
   const isDenied = Boolean(user && user.status === 'denied' && !user.isAdmin);
+  const hasStoreAssignments = user?.isAdmin ? stores.length > 0 : (user?.assignedStores.length ?? 0) > 0;
   const total = products.reduce((sum, product) => {
     const quantity = quantities[product._id] ?? 0;
-    return sum + (product.price + (user?.markupAmount ?? 0)) * quantity;
+    return sum + (product.price + (selectedStore?.markupAmount ?? 0)) * quantity;
   }, 0);
 
   async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
@@ -108,7 +134,14 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
           </div>
         ) : null}
 
-        {user && isApproved && hasSubmittedOrder ? (
+        {user && isApproved && !hasStoreAssignments ? (
+          <div className="order-section__notice">
+            <p>Your account is approved, but no stores have been assigned yet. An admin can add one or more stores from the users screen.</p>
+            <Link to="/clients">Back to client account</Link>
+          </div>
+        ) : null}
+
+        {user && isApproved && hasStoreAssignments && hasSubmittedOrder ? (
           <div className="order-section__success">
             <p className="order-section__message">{message}</p>
             <p>We&apos;ll confirm it shortly and email you if we need anything else.</p>
@@ -119,18 +152,22 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
           </div>
         ) : null}
 
-        {user && isApproved && !hasSubmittedOrder ? (
+        {user && isApproved && hasStoreAssignments && !hasSubmittedOrder ? (
           <form className="order-section__form stack" onSubmit={submitOrder}>
             <div className="field-grid">
               <label>
                 Store
-                <select onChange={(event) => onStoreChange(event.target.value)} value={selectedStoreId}>
-                  {stores.map((store) => (
-                    <option key={store._id} value={store._id}>
-                      {store.name}
-                    </option>
-                  ))}
-                </select>
+                {stores.length === 1 && selectedStore ? (
+                  <div className="order-section__store-readout">{selectedStore.name}</div>
+                ) : (
+                  <select onChange={(event) => setSelectedStoreId(event.target.value)} value={selectedStoreId}>
+                    {stores.map((store) => (
+                      <option key={store._id} value={store._id}>
+                        {store.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </label>
               <label>
                 Fulfillment date
@@ -149,7 +186,7 @@ export default function Order({ config, onStoreChange, products, sectionRef, sel
                 <label className="order-section__item" key={product._id}>
                   <span>
                     <strong>{product.name}</strong>
-                    <small>${(product.price + (user.markupAmount ?? 0)).toFixed(2)}</small>
+                    <small>${(product.price + (selectedStore?.markupAmount ?? 0)).toFixed(2)}</small>
                   </span>
                   <input
                     min="0"

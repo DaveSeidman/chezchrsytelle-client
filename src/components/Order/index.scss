@@ -17,6 +17,16 @@
   margin: 0;
 }
 
+.order-section__store-readout {
+  min-height: 3.25rem;
+  padding: 0.92rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
 .order-section__line-items {
   display: grid;
   gap: 0.75rem;

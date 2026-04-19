@@ -9,17 +9,11 @@ type ProductsProps = {
   selectedStoreId: string;
   stores: Store[];
   onStoreChange: (storeId: string) => void;
-  userMarkupAmount: number;
 };
 
-export default function Products({
-  products,
-  sectionRef,
-  selectedStoreId,
-  stores,
-  onStoreChange,
-  userMarkupAmount
-}: ProductsProps) {
+export default function Products({ products, sectionRef, selectedStoreId, stores, onStoreChange }: ProductsProps) {
+  const selectedStore = stores.find((store) => store._id === selectedStoreId) ?? null;
+
   return (
     <SectionPage eyebrow="Menu" id="products" sectionRef={sectionRef} title="Current salad offerings">
       <div className="products-section stack">
@@ -38,7 +32,7 @@ export default function Products({
 
         <div className="products-section__grid">
           {products.map((product) => {
-            const displayPrice = product.price + userMarkupAmount;
+            const displayPrice = product.price + (selectedStore?.markupAmount ?? 0);
 
             return (
               <article className="products-section__card" key={product._id}>
@@ -50,7 +44,7 @@ export default function Products({
                 <p>{product.ingredients.join(', ')}</p>
                 <div className="products-section__footer">
                   <span>${displayPrice.toFixed(2)}</span>
-                  {userMarkupAmount > 0 ? <small>Includes your client markup.</small> : null}
+                  {(selectedStore?.markupAmount ?? 0) > 0 ? <small>Includes this store&apos;s markup.</small> : null}
                 </div>
               </article>
             );

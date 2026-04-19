@@ -7,7 +7,8 @@ export type User = {
   isAdmin: boolean;
   isApproved: boolean;
   status: 'pending' | 'approved' | 'denied';
-  markupAmount: number;
+  assignedStoreIds: string[];
+  assignedStores: Store[];
   createdAt: string;
   updatedAt: string;
 };
@@ -32,6 +33,7 @@ export type Store = {
   isActive: boolean;
   pickupAddress: string;
   pickupNotes: string;
+  markupAmount: number;
   availableProductIds: string[];
   options: Record<string, unknown>;
 };
@@ -93,4 +95,12 @@ export type Order = {
   };
   createdAt: string;
   updatedAt: string;
+};
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
 };

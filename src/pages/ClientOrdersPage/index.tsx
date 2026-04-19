@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import StatusPill from '../../components/StatusPill';
 import { apiRequest } from '../../services/api';
-import type { Order } from '../../types/api';
+import type { Order, PaginatedResponse } from '../../types/api';
 
 function getStoreName(order: Order) {
   return typeof order.storeId === 'string' ? order.storeId : order.storeId.name;
@@ -21,13 +21,17 @@ function getProductName(productId: Order['lineItems'][number]['productId']) {
 
 export default function ClientOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  async function loadOrders(targetPage = 1) {
+    const response = await apiRequest<PaginatedResponse<Order>>(`/api/orders/me?page=${targetPage}&pageSize=20`);
+    setOrders(response.items);
+    setPage(response.page);
+    setTotalPages(response.totalPages);
+  }
 
   useEffect(() => {
-    async function loadOrders() {
-      const response = await apiRequest<Order[]>('/api/orders/me');
-      setOrders(response);
-    }
-
     void loadOrders();
   }, []);
 
@@ -61,6 +65,17 @@ export default function ClientOrdersPage() {
             <strong>Total: ${order.totals.total.toFixed(2)}</strong>
           </article>
         ))}
+      </div>
+      <div className="client-orders__pagination">
+        <button disabled={page <= 1} onClick={() => void loadOrders(page - 1)} type="button">
+          Previous
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button disabled={page >= totalPages} onClick={() => void loadOrders(page + 1)} type="button">
+          Next
+        </button>
       </div>
     </div>
   );

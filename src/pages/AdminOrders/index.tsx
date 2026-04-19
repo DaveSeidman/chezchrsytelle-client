@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import StatusPill from '../../components/StatusPill';
 import { apiRequest } from '../../services/api';
-import type { Order, OrderStatus } from '../../types/api';
+import type { Order, OrderStatus, PaginatedResponse } from '../../types/api';
 
 const statuses: OrderStatus[] = ['pending', 'confirmed', 'ready', 'completed', 'cancelled'];
 
@@ -27,10 +27,14 @@ function getProductName(productId: Order['lineItems'][number]['productId']) {
 export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [message, setMessage] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  async function loadOrders() {
-    const response = await apiRequest<Order[]>('/api/admin/orders');
-    setOrders(response);
+  async function loadOrders(targetPage = page) {
+    const response = await apiRequest<PaginatedResponse<Order>>(`/api/admin/orders?page=${targetPage}&pageSize=20`);
+    setOrders(response.items);
+    setPage(response.page);
+    setTotalPages(response.totalPages);
   }
 
   useEffect(() => {
@@ -44,7 +48,7 @@ export default function AdminOrders() {
     });
 
     setMessage('Order updated');
-    await loadOrders();
+    await loadOrders(page);
   }
 
   async function deleteOrder(orderId: string) {
@@ -59,7 +63,7 @@ export default function AdminOrders() {
     });
 
     setMessage('Order deleted');
-    await loadOrders();
+    await loadOrders(page);
   }
 
   return (
@@ -105,6 +109,17 @@ export default function AdminOrders() {
             </div>
           </article>
         ))}
+      </div>
+      <div className="admin-orders__pagination">
+        <button disabled={page <= 1} onClick={() => void loadOrders(page - 1)} type="button">
+          Previous
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button disabled={page >= totalPages} onClick={() => void loadOrders(page + 1)} type="button">
+          Next
+        </button>
       </div>
     </div>
   );

@@ -21,9 +21,9 @@ export default function PublicSite() {
   const { activeSection, navigateToSection, registerSection } = useSectionRouting(sectionIds);
   const { user } = useAuth();
   const [config, setConfig] = useState<Config | null>(null);
-  const [stores, setStores] = useState<Store[]>([]);
+  const [publicStores, setPublicStores] = useState<Store[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedStoreId, setSelectedStoreId] = useState('');
+  const [selectedCatalogStoreId, setSelectedCatalogStoreId] = useState('');
 
   useEffect(() => {
     async function loadInitialData() {
@@ -33,10 +33,10 @@ export default function PublicSite() {
       ]);
 
       setConfig(fetchedConfig);
-      setStores(fetchedStores);
+      setPublicStores(fetchedStores);
 
       if (fetchedStores[0]) {
-        setSelectedStoreId(fetchedStores[0]._id);
+        setSelectedCatalogStoreId(fetchedStores[0]._id);
       }
     }
 
@@ -44,17 +44,19 @@ export default function PublicSite() {
   }, []);
 
   useEffect(() => {
-    if (!selectedStoreId) {
+    if (!selectedCatalogStoreId) {
       return;
     }
 
     async function loadProducts() {
-      const fetchedProducts = await apiRequest<Product[]>(`/api/products/public?storeId=${selectedStoreId}`);
+      const fetchedProducts = await apiRequest<Product[]>(`/api/products/public?storeId=${selectedCatalogStoreId}`);
       setProducts(fetchedProducts);
     }
 
     void loadProducts();
-  }, [selectedStoreId]);
+  }, [selectedCatalogStoreId]);
+
+  const orderStores = user?.isAdmin ? publicStores : user?.assignedStores ?? [];
 
   return (
     <AppShell activeSection={activeSection} onClientsClick={() => navigate('/clients')} onNavigate={navigateToSection} user={user}>
@@ -62,21 +64,13 @@ export default function PublicSite() {
         <Home sectionRef={registerSection('home')} />
         <About sectionRef={registerSection('about')} />
         <Products
-          onStoreChange={setSelectedStoreId}
+          onStoreChange={setSelectedCatalogStoreId}
           products={products}
           sectionRef={registerSection('products')}
-          selectedStoreId={selectedStoreId}
-          stores={stores}
-          userMarkupAmount={user?.markupAmount ?? 0}
+          selectedStoreId={selectedCatalogStoreId}
+          stores={publicStores}
         />
-        <Order
-          config={config}
-          onStoreChange={setSelectedStoreId}
-          products={products}
-          sectionRef={registerSection('order')}
-          selectedStoreId={selectedStoreId}
-          stores={stores}
-        />
+        <Order config={config} sectionRef={registerSection('order')} stores={orderStores} />
         <Contact contactEmail={config?.contactEmail ?? 'chrystelleseidman@gmail.com'} sectionRef={registerSection('contact')} />
       </div>
     </AppShell>

@@ -24,6 +24,13 @@
   flex-wrap: wrap;
 }
 
+.admin-orders__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .admin-orders__delete {
   color: var(--danger);
 }
@@ -36,6 +43,10 @@
 @media (max-width: 640px) {
   .admin-orders__top,
   .admin-orders__bottom {
+    display: grid;
+  }
+
+  .admin-orders__pagination {
     display: grid;
   }
 }

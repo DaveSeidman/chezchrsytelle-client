@@ -30,15 +30,31 @@
 }
 
 .admin-stores__card {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
   gap: 1rem;
-  align-items: center;
   padding: 1rem;
   border-radius: 1rem;
   border: 1px solid var(--border);
 }
 
+.admin-stores__card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.admin-stores__editor--inline {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
 .admin-stores__card p {
   margin: 0.25rem 0 0;
+}
+
+@media (max-width: 640px) {
+  .admin-stores__card-top {
+    display: grid;
+  }
 }

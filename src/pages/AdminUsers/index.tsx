@@ -3,7 +3,7 @@ import './index.scss';
 import { useEffect, useState } from 'react';
 
 import { apiRequest } from '../../services/api';
-import type { User } from '../../types/api';
+import type { Store, User } from '../../types/api';
 
 function getReviewPriority(user: User) {
   if (user.isAdmin) {
@@ -19,11 +19,17 @@ function getReviewPriority(user: User) {
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [message, setMessage] = useState('');
 
   async function loadUsers() {
-    const response = await apiRequest<User[]>('/api/admin/users');
-    setUsers(response);
+    const [userResponse, storeResponse] = await Promise.all([
+      apiRequest<User[]>('/api/admin/users'),
+      apiRequest<Store[]>('/api/admin/stores')
+    ]);
+
+    setUsers(userResponse);
+    setStores(storeResponse);
   }
 
   useEffect(() => {
@@ -59,7 +65,7 @@ export default function AdminUsers() {
           })
           .map((user) => (
           <div className="admin-users__row" key={user._id}>
-            <div>
+            <div className="admin-users__identity">
               <strong>{user.displayName}</strong>
               <p>{user.email}</p>
             </div>
@@ -77,22 +83,33 @@ export default function AdminUsers() {
                 </button>
               </div>
             </div>
+            <div className="admin-users__stores">
+              <span>Stores</span>
+              <div className="admin-users__store-list">
+                {stores.map((store) => (
+                  <label key={`${user._id}-${store._id}`}>
+                    <input
+                      checked={user.assignedStoreIds.includes(store._id)}
+                      onChange={(event) => {
+                        const nextStoreIds = event.target.checked
+                          ? [...user.assignedStoreIds, store._id]
+                          : user.assignedStoreIds.filter((storeId) => storeId !== store._id);
+
+                        void updateUser(user._id, { assignedStoreIds: nextStoreIds } as Partial<User>);
+                      }}
+                      type="checkbox"
+                    />
+                    {store.name}
+                  </label>
+                ))}
+              </div>
+            </div>
             <label>
               Admin
               <input
                 checked={user.isAdmin}
                 onChange={(event) => updateUser(user._id, { isAdmin: event.target.checked })}
                 type="checkbox"
-              />
-            </label>
-            <label>
-              Markup
-              <input
-                min="0"
-                onBlur={(event) => updateUser(user._id, { markupAmount: Number(event.target.value) })}
-                step="0.01"
-                type="number"
-                defaultValue={user.markupAmount}
               />
             </label>
           </div>

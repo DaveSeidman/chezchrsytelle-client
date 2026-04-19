@@ -4,13 +4,23 @@
 }
 
 .admin-users__row {
-  display: grid;
-  grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) repeat(2, minmax(100px, 140px));
+  display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-start;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 1rem;
+}
+
+.admin-users__identity {
+  flex: 1;
+  min-width: 16rem;
+}
+
+.admin-users__identity strong,
+.admin-users__identity p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .admin-users__row p {
@@ -18,22 +28,64 @@
 }
 
 .admin-users__status {
-  display: grid;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 11rem;
 }
 
 .admin-users__actions {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.admin-users__actions button {
+  min-height: 2.25rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  box-shadow: none;
+}
+
+.admin-users__stores {
+  display: grid;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  min-width: 15rem;
+}
+
+.admin-users__stores > span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.admin-users__store-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.admin-users__store-list label {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
 }
 
 .admin-users__row input[type='checkbox'] {
   width: auto;
 }
 
+.admin-users__row > label {
+  min-width: 7rem;
+}
+
 @media (max-width: 900px) {
   .admin-users__row {
+    display: grid;
     grid-template-columns: 1fr;
   }
 }
