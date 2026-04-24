@@ -49,7 +49,6 @@
 :root {
   color-scheme: light;
   font-family: 'Quicksand', 'Avenir Next', 'Segoe UI', sans-serif;
-  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --font-accent: 'Lombok', 'Quicksand', 'Avenir Next', 'Segoe UI', sans-serif;
   line-height: 1.5;
   color: #243126;
@@ -263,7 +262,8 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display);
+  font-family: 'Quicksand', 'Avenir Next', 'Segoe UI', sans-serif;
+  font-weight: 700;
   letter-spacing: -0.03em;
 }
 

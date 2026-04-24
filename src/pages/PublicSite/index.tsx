@@ -40,7 +40,7 @@ export default function PublicSite() {
       <div className="public-site">
         <Home sectionRef={registerSection('home')} />
         <LetsEat sectionRef={registerSection('lets-eat')} />
-        {/* <Travel sectionRef={registerSection('travel')} /> */}
+        <Travel sectionRef={registerSection('travel')} />
         <Locations sectionRef={registerSection('locations')} stores={publicStores} />
         <Contact contactEmail={config?.contactEmail ?? 'chrystelleseidman@gmail.com'} sectionRef={registerSection('contact')} />
       </div>

@@ -40,7 +40,7 @@ export default function App() {
       <Route path="/family-dinners" element={<Navigate to="/lets-eat" replace />} />
       <Route path="/catering" element={<Navigate to="/lets-eat" replace />} />
       <Route path="/lets-eat" element={<PublicSite />} />
-      {/* <Route path="/travel" element={<PublicSite />} /> */}
+      <Route path="/travel" element={<PublicSite />} />
       <Route path="/locations" element={<PublicSite />} />
       <Route path="/products" element={<Navigate to="/" replace />} />
       <Route path="/order" element={<Navigate to="/clients/order" replace />} />

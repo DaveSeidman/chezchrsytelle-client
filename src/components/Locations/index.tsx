@@ -110,10 +110,15 @@ export default function Locations({ sectionRef, stores }: LocationsProps) {
       <div className="page_body">
         <div className="locations">
           <div className="locations_list_wrap">
+            <p className="locations_subtitle">Where to find our Magic Kale Salads</p>
+            <button
+              className={!selectedStoreId ? 'locations_reset is-active' : 'locations_reset'}
+              onClick={() => setSelectedStoreId('')}
+              type="button"
+            >
+              All locations
+            </button>
             <div className="locations_list" role="list">
-              <button className={!selectedStoreId ? 'locations_list_item is-active' : 'locations_list_item'} onClick={() => setSelectedStoreId('')} type="button">
-                <span className="locations_list_name">All locations</span>
-              </button>
               {availableStores.map((store) => (
                 <button
                   className={selectedStoreId === store._id ? 'locations_list_item is-active' : 'locations_list_item'}
