@@ -8,38 +8,44 @@ import AdminProducts from './pages/AdminProducts';
 import AdminStores from './pages/AdminStores';
 import AdminUsers from './pages/AdminUsers';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import ClientOrderPage from './pages/ClientOrderPage';
 import ClientOrdersPage from './pages/ClientOrdersPage';
 import ClientsPage from './pages/ClientsPage';
 import PublicSite from './pages/PublicSite';
 
 export default function App() {
+  const adminRoute = (
+    <ProtectedRoute requireAdmin>
+      <AdminPage />
+    </ProtectedRoute>
+  );
+
+  const clientOrderRoute = (
+    <ProtectedRoute requireApproved>
+      <ClientOrderPage />
+    </ProtectedRoute>
+  );
+
+  const clientOrdersRoute = (
+    <ProtectedRoute requireApproved>
+      <ClientOrdersPage />
+    </ProtectedRoute>
+  );
+
   return (
     <Routes>
       <Route path="/" element={<PublicSite />} />
-      <Route path="/about" element={<PublicSite />} />
-      <Route path="/products" element={<PublicSite />} />
-      <Route path="/order" element={<PublicSite />} />
+      <Route path="/about" element={<Navigate to="/" replace />} />
       <Route path="/contact" element={<PublicSite />} />
+      <Route path="/family-dinners" element={<Navigate to="/lets-eat" replace />} />
+      <Route path="/catering" element={<Navigate to="/lets-eat" replace />} />
+      <Route path="/lets-eat" element={<PublicSite />} />
+      {/* <Route path="/travel" element={<PublicSite />} /> */}
+      <Route path="/locations" element={<PublicSite />} />
+      <Route path="/products" element={<Navigate to="/" replace />} />
+      <Route path="/order" element={<Navigate to="/clients/order" replace />} />
 
-      <Route path="/clients" element={<ClientsPage />} />
-      <Route path="/clients/auth/callback" element={<AuthCallbackPage />} />
-      <Route
-        path="/clients/orders"
-        element={
-          <ProtectedRoute requireApproved>
-            <ClientOrdersPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute requireAdmin>
-            <AdminPage />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/admin" element={adminRoute}>
         <Route index element={<Navigate to="users" replace />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="stores" element={<AdminStores />} />
@@ -47,6 +53,11 @@ export default function App() {
         <Route path="orders" element={<AdminOrders />} />
         <Route path="config" element={<AdminConfig />} />
       </Route>
+
+      <Route path="/clients" element={<ClientsPage />} />
+      <Route path="/clients/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/clients/order" element={clientOrderRoute} />
+      <Route path="/clients/orders" element={clientOrdersRoute} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -2,6 +2,7 @@ import './index.scss';
 
 import { Link, useSearchParams } from 'react-router-dom';
 
+import ClientPortalShell from '../../components/ClientPortalShell';
 import StatusPill from '../../components/StatusPill';
 import { useAuth } from '../../context/AuthContext';
 import { getApiUrl, isDevLoginEnabled } from '../../services/api';
@@ -25,25 +26,32 @@ export default function ClientsPage() {
 
   return (
     <div className="clients-page page-shell">
-      <div className="clients-page__card card">
-        <h1>Client account</h1>
-        {errorMessage ? <p>{errorMessage}</p> : null}
-        {isLoading ? <p>Loading account...</p> : null}
-        {!isLoading && !user ? (
-          <div className="stack">
-            <p>Stores can sign up here with Google to request access to the weekly salad ordering portal.</p>
-            <button className="primary" onClick={login} type="button">
-              Sign up for salads
-            </button>
-            {isDevLoginEnabled() ? (
-              <button onClick={startDevLogin} type="button">
-                Use local dev login
+      {!user ? (
+        <div className="clients-page__card card">
+          <h1>Client Portal</h1>
+          {errorMessage ? <p>{errorMessage}</p> : null}
+          {isLoading ? <p>Loading account...</p> : null}
+          {!isLoading && !user ? (
+            <div className="stack">
+              <p>Stores can sign up here with Google to request access to the weekly salad ordering portal.</p>
+              <button className="primary" onClick={login} type="button">
+                Sign up for salads
               </button>
-            ) : null}
-          </div>
-        ) : null}
+              {isDevLoginEnabled() ? (
+                <button onClick={startDevLogin} type="button">
+                  Use local dev login
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
-        {user ? (
+      {user ? (
+        <ClientPortalShell
+          description="Review your approval status, place new orders, and keep tabs on past submissions."
+          title="Client Portal"
+        >
           <div className="stack">
             <p>
               Signed in as <strong>{user.displayName}</strong> ({user.email})
@@ -54,15 +62,17 @@ export default function ClientsPage() {
             </div>
             <p>
               {isApproved
-                ? 'You can place orders from the Order section on the homepage and review them below.'
+                ? 'You can place new orders from this client portal and review every past order below.'
                 : isDenied
                   ? 'Your request was declined. Reach out through the contact form if you would like us to review it again.'
                   : 'Thanks for signing up. Your account is waiting for admin approval before ordering unlocks.'}
             </p>
             <div className="clients-page__actions">
-              <Link className="clients-page__link" to="/">
-                Back to homepage
-              </Link>
+              {isApproved ? (
+                <Link className="clients-page__link" to="/clients/order">
+                  Place an order
+                </Link>
+              ) : null}
               {isApproved ? (
                 <Link className="clients-page__link" to="/clients/orders">
                   View my orders
@@ -78,8 +88,8 @@ export default function ClientsPage() {
               </button>
             </div>
           </div>
-        ) : null}
-      </div>
+        </ClientPortalShell>
+      ) : null}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import './index.scss';
 
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
+import ClientPortalShell from '../../components/ClientPortalShell';
 import StatusPill from '../../components/StatusPill';
 import { apiRequest } from '../../services/api';
 import type { Order, PaginatedResponse } from '../../types/api';
@@ -36,15 +36,8 @@ export default function ClientOrdersPage() {
   }, []);
 
   return (
-    <div className="client-orders page-shell">
-      <div className="client-orders__header">
-        <div>
-          <h1>My orders</h1>
-          <p>Track every submitted order and its status here.</p>
-        </div>
-        <Link to="/">Back to site</Link>
-      </div>
-
+    <ClientPortalShell description="Track every submitted order and watch status updates from the kitchen team." title="My Orders">
+      <div className="client-orders">
       <div className="client-orders__list">
         {orders.map((order) => (
           <article className="client-orders__card card" key={order._id}>
@@ -77,6 +70,7 @@ export default function ClientOrdersPage() {
           Next
         </button>
       </div>
-    </div>
+      </div>
+    </ClientPortalShell>
   );
 }

@@ -1,0 +1,47 @@
+.lets-eat_section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.lets-eat_column {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.lets-eat_image {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(36, 49, 38, 0.08);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.lets-eat_image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lets-eat_copy {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.lets-eat_copy h2,
+.lets-eat_copy p {
+  margin: 0;
+}
+
+@media (max-width: 1040px) {
+  .lets-eat_section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .lets-eat_section {
+    grid-template-columns: 1fr;
+  }
+}

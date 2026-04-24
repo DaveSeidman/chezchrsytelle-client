@@ -6,11 +6,9 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import type { Config, Product, Store } from '../../types/api';
-import SectionPage from '../SectionPage';
 
 type OrderProps = {
   config: Config | null;
-  sectionRef: (element: HTMLElement | null) => void;
   stores: Store[];
 };
 
@@ -20,7 +18,7 @@ function getTodayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export default function Order({ config, sectionRef, stores }: OrderProps) {
+export default function Order({ config, stores }: OrderProps) {
   const { login, user } = useAuth();
   const [fulfillmentDate, setFulfillmentDate] = useState(getTodayString());
   const [notes, setNotes] = useState('');
@@ -109,119 +107,117 @@ export default function Order({ config, sectionRef, stores }: OrderProps) {
   }
 
   return (
-    <SectionPage eyebrow="Clients" id="order" sectionRef={sectionRef} title="Ordering is reserved for approved clients">
-      <div className="order-section stack">
-        {!user ? (
-          <div className="order-section__notice">
-            <p>Browse the menu above, then sign up or sign in with Google to request access to client ordering.</p>
-            <button className="primary" onClick={login} type="button">
-              Sign up or sign in with Google
+    <div className="order-section stack">
+      {!user ? (
+        <div className="order-section__notice">
+          <p>Please sign in through the client portal before placing an order.</p>
+          <button className="primary" onClick={login} type="button">
+            Sign in with Google
+          </button>
+        </div>
+      ) : null}
+
+      {user && !isApproved && !isDenied ? (
+        <div className="order-section__notice">
+          <p>Your account is pending approval. Once approved, ordering will unlock automatically.</p>
+          <Link to="/clients">Go to client portal</Link>
+        </div>
+      ) : null}
+
+      {user && isDenied ? (
+        <div className="order-section__notice">
+          <p>Your signup request was declined. Reach out through the contact form if you think this was a mistake.</p>
+          <Link to="/contact">Contact us</Link>
+        </div>
+      ) : null}
+
+      {user && isApproved && !hasStoreAssignments ? (
+        <div className="order-section__notice">
+          <p>Your account is approved, but no stores have been assigned yet. An admin can add one or more stores from the users screen.</p>
+          <Link to="/clients">Back to client portal</Link>
+        </div>
+      ) : null}
+
+      {user && isApproved && hasStoreAssignments && hasSubmittedOrder ? (
+        <div className="order-section__success">
+          <p className="order-section__message">{message}</p>
+          <p>We&apos;ll confirm it shortly and email you if we need anything else.</p>
+          <div className="order-section__success-actions">
+            <Link to="/clients/orders">View my orders</Link>
+            <Link to="/clients">Back to client portal</Link>
+          </div>
+        </div>
+      ) : null}
+
+      {user && isApproved && hasStoreAssignments && !hasSubmittedOrder ? (
+        <form className="order-section__form stack" onSubmit={submitOrder}>
+          <div className="field-grid">
+            <label>
+              Store
+              {stores.length === 1 && selectedStore ? (
+                <div className="order-section__store-readout">{selectedStore.name}</div>
+              ) : (
+                <select onChange={(event) => setSelectedStoreId(event.target.value)} value={selectedStoreId}>
+                  {stores.map((store) => (
+                    <option key={store._id} value={store._id}>
+                      {store.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </label>
+            <label>
+              Fulfillment date
+              <input onChange={(event) => setFulfillmentDate(event.target.value)} type="date" value={fulfillmentDate} />
+            </label>
+          </div>
+
+          {selectedStore ? (
+            <p className="order-section__pickup">
+              Pickup: {selectedStore.pickupAddress || 'Details to follow by email'} {selectedStore.pickupNotes}
+            </p>
+          ) : null}
+
+          <div className="order-section__line-items">
+            {products.map((product) => (
+              <label className="order-section__item" key={product._id}>
+                <span>
+                  <strong>{product.name}</strong>
+                  <small>${(product.price + (selectedStore?.markupAmount ?? 0)).toFixed(2)}</small>
+                </span>
+                <input
+                  min="0"
+                  onChange={(event) =>
+                    setQuantities((current) => ({
+                      ...current,
+                      [product._id]: Number(event.target.value)
+                    }))
+                  }
+                  type="number"
+                  value={quantities[product._id] ?? 0}
+                />
+              </label>
+            ))}
+          </div>
+
+          <label>
+            Notes
+            <textarea onChange={(event) => setNotes(event.target.value)} rows={4} value={notes} />
+          </label>
+
+          <div className="order-section__actions">
+            <div>
+              <strong>Total: ${total.toFixed(2)}</strong>
+              <p>Past orders are always available in your client portal.</p>
+            </div>
+            <button className="primary" disabled={isSubmitting || total === 0} type="submit">
+              {isSubmitting ? 'Submitting...' : 'Place order'}
             </button>
           </div>
-        ) : null}
 
-        {user && !isApproved && !isDenied ? (
-          <div className="order-section__notice">
-            <p>Your account is pending approval. Once approved, ordering will unlock automatically.</p>
-            <Link to="/clients">Go to client account</Link>
-          </div>
-        ) : null}
-
-        {user && isDenied ? (
-          <div className="order-section__notice">
-            <p>Your signup request was declined. Reach out through the contact form if you think this was a mistake.</p>
-            <Link to="/contact">Contact us</Link>
-          </div>
-        ) : null}
-
-        {user && isApproved && !hasStoreAssignments ? (
-          <div className="order-section__notice">
-            <p>Your account is approved, but no stores have been assigned yet. An admin can add one or more stores from the users screen.</p>
-            <Link to="/clients">Back to client account</Link>
-          </div>
-        ) : null}
-
-        {user && isApproved && hasStoreAssignments && hasSubmittedOrder ? (
-          <div className="order-section__success">
-            <p className="order-section__message">{message}</p>
-            <p>We&apos;ll confirm it shortly and email you if we need anything else.</p>
-            <div className="order-section__success-actions">
-              <Link to="/clients/orders">View my orders</Link>
-              <Link to="/">Back to homepage</Link>
-            </div>
-          </div>
-        ) : null}
-
-        {user && isApproved && hasStoreAssignments && !hasSubmittedOrder ? (
-          <form className="order-section__form stack" onSubmit={submitOrder}>
-            <div className="field-grid">
-              <label>
-                Store
-                {stores.length === 1 && selectedStore ? (
-                  <div className="order-section__store-readout">{selectedStore.name}</div>
-                ) : (
-                  <select onChange={(event) => setSelectedStoreId(event.target.value)} value={selectedStoreId}>
-                    {stores.map((store) => (
-                      <option key={store._id} value={store._id}>
-                        {store.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </label>
-              <label>
-                Fulfillment date
-                <input onChange={(event) => setFulfillmentDate(event.target.value)} type="date" value={fulfillmentDate} />
-              </label>
-            </div>
-
-            {selectedStore ? (
-              <p className="order-section__pickup">
-                Pickup: {selectedStore.pickupAddress || 'Details to follow by email'} {selectedStore.pickupNotes}
-              </p>
-            ) : null}
-
-            <div className="order-section__line-items">
-              {products.map((product) => (
-                <label className="order-section__item" key={product._id}>
-                  <span>
-                    <strong>{product.name}</strong>
-                    <small>${(product.price + (selectedStore?.markupAmount ?? 0)).toFixed(2)}</small>
-                  </span>
-                  <input
-                    min="0"
-                    onChange={(event) =>
-                      setQuantities((current) => ({
-                        ...current,
-                        [product._id]: Number(event.target.value)
-                      }))
-                    }
-                    type="number"
-                    value={quantities[product._id] ?? 0}
-                  />
-                </label>
-              ))}
-            </div>
-
-            <label>
-              Notes
-              <textarea onChange={(event) => setNotes(event.target.value)} rows={4} value={notes} />
-            </label>
-
-            <div className="order-section__actions">
-              <div>
-                <strong>Total: ${total.toFixed(2)}</strong>
-                <p>Past orders are always available in your client account.</p>
-              </div>
-              <button className="primary" disabled={isSubmitting || total === 0} type="submit">
-                {isSubmitting ? 'Submitting...' : 'Place order'}
-              </button>
-            </div>
-
-            {message ? <p className="order-section__message">{message}</p> : null}
-          </form>
-        ) : null}
-      </div>
-    </SectionPage>
+          {message ? <p className="order-section__message">{message}</p> : null}
+        </form>
+      ) : null}
+    </div>
   );
 }

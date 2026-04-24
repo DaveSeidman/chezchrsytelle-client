@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const sectionPaths: Record<string, string> = {
   home: '/',
-  about: '/about',
-  products: '/products',
-  order: '/order',
+  'lets-eat': '/lets-eat',
+  // travel: '/travel',
+  locations: '/locations',
   contact: '/contact'
 };
 

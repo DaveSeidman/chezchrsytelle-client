@@ -1,19 +1,18 @@
 import './index.scss';
 
-import SectionPage from '../SectionPage';
 
-type AboutProps = {
-  sectionRef: (element: HTMLElement | null) => void;
-};
-
-export default function About({ sectionRef }: AboutProps) {
+export default function About() {
   return (
-    <SectionPage eyebrow="About" id="about" sectionRef={sectionRef} title="Magic Kale Salads">
-      <div className="about-section">
-        <p>
-          Bonjour! Chez Chrystelle is rooted in family, hospitality, and food made to be shared.
-        </p>
+    <div className="page about" id="about">
+      <h1 className="page_title">About</h1>
+      <div className="page_body">
+        <div className="about-section">
+          <p>
+            Bonjour! My name is Chrystelle and I am a <strong>Proud Cameroonian mama</strong> living in Brooklyn with my
+            husband and three small children and <em>ChezChrystelle</em> is how we share our home with <strong>you!</strong>
+          </p>
+        </div>
       </div>
-    </SectionPage>
+    </div>
   );
 }

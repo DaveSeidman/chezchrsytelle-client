@@ -1,6 +1,6 @@
 import './index.scss';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 
 import { apiRequest } from '../../services/api';
 import type { Product } from '../../types/api';
@@ -11,6 +11,7 @@ const emptyProduct = {
   baseName: '',
   size: 'small' as 'small' | 'large',
   ingredients: '',
+  images: '',
   price: 0,
   isActive: true,
   sortOrder: 0
@@ -23,9 +24,18 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
+function parseLines(value: string) {
+  return value
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [draft, setDraft] = useState(emptyProduct);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editingDraft, setEditingDraft] = useState(emptyProduct);
 
   async function loadProducts() {
     const response = await apiRequest<Product[]>('/api/admin/products');
@@ -44,7 +54,8 @@ export default function AdminProducts() {
         ingredients: draft.ingredients
           .split(',')
           .map((item) => item.trim())
-          .filter(Boolean)
+          .filter(Boolean),
+        images: parseLines(draft.images)
       })
     });
 
@@ -52,13 +63,170 @@ export default function AdminProducts() {
     await loadProducts();
   }
 
+  async function saveEditedProduct() {
+    if (!editingProductId) {
+      return;
+    }
+
+    await apiRequest(`/api/admin/products/${editingProductId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        ...editingDraft,
+        ingredients: editingDraft.ingredients
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean),
+        images: parseLines(editingDraft.images)
+      })
+    });
+
+    setEditingProductId(null);
+    setEditingDraft(emptyProduct);
+    await loadProducts();
+  }
+
   async function deleteProduct(productId: string) {
     await apiRequest(`/api/admin/products/${productId}`, { method: 'DELETE' });
+
+    if (editingProductId === productId) {
+      setEditingProductId(null);
+      setEditingDraft(emptyProduct);
+    }
+
     await loadProducts();
   }
 
   function resetEditor() {
     setDraft(emptyProduct);
+  }
+
+  function startEditingProduct(product: Product) {
+    setEditingProductId(product._id);
+    setEditingDraft({
+      name: product.name,
+      slug: product.slug,
+      baseName: product.baseName,
+      size: product.size,
+      ingredients: product.ingredients.join(', '),
+      images: (product.images ?? []).join('\n'),
+      price: product.price,
+      isActive: product.isActive,
+      sortOrder: product.sortOrder
+    });
+  }
+
+  function cancelEditingProduct() {
+    setEditingProductId(null);
+    setEditingDraft(emptyProduct);
+  }
+
+  function renderProductForm(
+    productDraft: typeof emptyProduct,
+    setProductDraft: Dispatch<SetStateAction<typeof emptyProduct>>,
+    onSave: () => Promise<void> | void,
+    onCancel: () => void,
+    submitLabel: string,
+    title: string,
+    description: string,
+    className = 'admin-products__create'
+  ) {
+    return (
+      <div className={`${className} stack`}>
+        <div className="admin-products__editor-header">
+          <div>
+            <strong>{title}</strong>
+            <p>{description}</p>
+          </div>
+          <span className="admin-products__price-badge">{formatCurrency(productDraft.price)}</span>
+        </div>
+        <div className="field-grid">
+          <label>
+            Name
+            <input onChange={(event) => setProductDraft((current) => ({ ...current, name: event.target.value }))} value={productDraft.name} />
+          </label>
+          <label>
+            Slug
+            <input onChange={(event) => setProductDraft((current) => ({ ...current, slug: event.target.value }))} value={productDraft.slug} />
+          </label>
+          <label>
+            Base name
+            <input onChange={(event) => setProductDraft((current) => ({ ...current, baseName: event.target.value }))} value={productDraft.baseName} />
+          </label>
+          <label>
+            Size
+            <select
+              onChange={(event) => setProductDraft((current) => ({ ...current, size: event.target.value as 'small' | 'large' }))}
+              value={productDraft.size}
+            >
+              <option value="small">small</option>
+              <option value="large">large</option>
+            </select>
+          </label>
+          <label>
+            Price
+            <input
+              min="0"
+              onChange={(event) => setProductDraft((current) => ({ ...current, price: Number(event.target.value) }))}
+              step="0.01"
+              type="number"
+              value={productDraft.price}
+            />
+          </label>
+          <label>
+            Sort order
+            <input
+              min="0"
+              onChange={(event) => setProductDraft((current) => ({ ...current, sortOrder: Number(event.target.value) }))}
+              type="number"
+              value={productDraft.sortOrder}
+            />
+          </label>
+        </div>
+        <label>
+          Ingredients
+          <input
+            onChange={(event) => setProductDraft((current) => ({ ...current, ingredients: event.target.value }))}
+            placeholder="greens, tomatoes, cucumbers"
+            value={productDraft.ingredients}
+          />
+        </label>
+        <label>
+          Image URLs
+          <textarea
+            onChange={(event) => setProductDraft((current) => ({ ...current, images: event.target.value }))}
+            placeholder={'One image URL per line\nhttps://chezchrystelle.com/products/plain-salad-1.jpg'}
+            rows={4}
+            value={productDraft.images}
+          />
+        </label>
+        {parseLines(productDraft.images).length ? (
+          <div className="admin-products__image-preview-grid">
+            {parseLines(productDraft.images).map((imageUrl) => (
+              <div className="admin-products__image-preview" key={imageUrl}>
+                <img alt="" src={imageUrl} />
+                <small>{imageUrl}</small>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        <label className="admin-products__checkbox">
+          <input
+            checked={productDraft.isActive}
+            onChange={(event) => setProductDraft((current) => ({ ...current, isActive: event.target.checked }))}
+            type="checkbox"
+          />
+          Active
+        </label>
+        <div className="admin-products__editor-actions">
+          <button className="primary" onClick={() => void onSave()} type="button">
+            {submitLabel}
+          </button>
+          <button onClick={onCancel} type="button">
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -71,92 +239,70 @@ export default function AdminProducts() {
       <div className="admin-products__list">
         {products.map((product) => (
           <article className="admin-products__card" key={product._id}>
-            <div className="admin-products__card-copy">
-              <strong>{product.name}</strong>
-              <div className="admin-products__meta">
-                <span>{product.size}</span>
-                <span>{formatCurrency(product.price)}</span>
+            <div className="admin-products__card-top">
+              <div className="admin-products__card-copy">
+                <strong>{product.name}</strong>
+                <div className="admin-products__meta">
+                  <span>{product.size}</span>
+                  <span>{formatCurrency(product.price)}</span>
+                </div>
+                <p>{product.ingredients.join(', ')}</p>
+                <p>Images: {(product.images ?? []).length}</p>
+                {(product.images ?? [])[0] ? (
+                  <div className="admin-products__card-image">
+                    <img alt={product.name} src={product.images[0]} />
+                  </div>
+                ) : null}
               </div>
-              <p>{product.ingredients.join(', ')}</p>
-            </div>
-            <div className="admin-products__inline">
-              <label className="admin-products__checkbox">
-                <input
-                  checked={product.isActive}
-                  onChange={async (event) => {
-                    await apiRequest(`/api/admin/products/${product._id}`, {
-                      method: 'PATCH',
-                      body: JSON.stringify({ isActive: event.target.checked })
-                    });
+              <div className="admin-products__inline">
+                <label className="admin-products__checkbox">
+                  <input
+                    checked={product.isActive}
+                    onChange={async (event) => {
+                      await apiRequest(`/api/admin/products/${product._id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ isActive: event.target.checked })
+                      });
 
-                    await loadProducts();
-                  }}
-                  type="checkbox"
-                />
-                Active
-              </label>
-              <button onClick={() => deleteProduct(product._id)} type="button">
-                Delete
-              </button>
+                      await loadProducts();
+                    }}
+                    type="checkbox"
+                  />
+                  Active
+                </label>
+                <button onClick={() => startEditingProduct(product)} type="button">
+                  Edit
+                </button>
+                <button onClick={() => deleteProduct(product._id)} type="button">
+                  Delete
+                </button>
+              </div>
             </div>
+            {editingProductId === product._id
+              ? renderProductForm(
+                  editingDraft,
+                  setEditingDraft,
+                  saveEditedProduct,
+                  cancelEditingProduct,
+                  'Save changes',
+                  `Edit ${product.name}`,
+                  'Update pricing, naming, ingredient copy, and activation state for this product.',
+                  'admin-products__create admin-products__create--inline'
+                )
+              : null}
           </article>
         ))}
       </div>
 
-      <div className="admin-products__create stack">
-        <div className="admin-products__editor-header">
-          <div>
-            <strong>Add new product</strong>
-            <p>Use precise pricing here so each store sees clean client-ready totals.</p>
-          </div>
-          <span className="admin-products__price-badge">{formatCurrency(draft.price)}</span>
-        </div>
-        <div className="field-grid">
-          <label>
-            Name
-            <input onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} value={draft.name} />
-          </label>
-          <label>
-            Slug
-            <input onChange={(event) => setDraft((current) => ({ ...current, slug: event.target.value }))} value={draft.slug} />
-          </label>
-          <label>
-            Base name
-            <input onChange={(event) => setDraft((current) => ({ ...current, baseName: event.target.value }))} value={draft.baseName} />
-          </label>
-          <label>
-            Size
-            <select onChange={(event) => setDraft((current) => ({ ...current, size: event.target.value as 'small' | 'large' }))} value={draft.size}>
-              <option value="small">small</option>
-              <option value="large">large</option>
-            </select>
-          </label>
-          <label>
-            Price
-            <input min="0" onChange={(event) => setDraft((current) => ({ ...current, price: Number(event.target.value) }))} step="0.01" type="number" value={draft.price} />
-          </label>
-          <label>
-            Sort order
-            <input min="0" onChange={(event) => setDraft((current) => ({ ...current, sortOrder: Number(event.target.value) }))} type="number" value={draft.sortOrder} />
-          </label>
-        </div>
-        <label>
-          Ingredients
-          <input
-            onChange={(event) => setDraft((current) => ({ ...current, ingredients: event.target.value }))}
-            placeholder="greens, tomatoes, cucumbers"
-            value={draft.ingredients}
-          />
-        </label>
-        <div className="admin-products__editor-actions">
-          <button className="primary" onClick={saveProduct} type="button">
-            Create product
-          </button>
-          <button onClick={resetEditor} type="button">
-            Clear
-          </button>
-        </div>
-      </div>
+      {renderProductForm(
+        draft,
+        setDraft,
+        saveProduct,
+        resetEditor,
+        'Create product',
+        'Add new product',
+        'Use precise pricing here so each store sees clean client-ready totals.'
+      )}
     </div>
   );
 }

@@ -8,23 +8,39 @@
 }
 
 .nav-bar__inner {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   min-height: 5rem;
   padding: 0.9rem 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 999px;
+}
+
+.nav-bar__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: inherit;
   background: rgba(255, 252, 246, 0.72);
   box-shadow: var(--shadow-soft);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 9%, black 91%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 9%, black 91%, transparent 100%);
 }
 
 .nav-bar__brand {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  display: flex;
+  align-items: center;
+}
+
+.nav-bar__brand-image {
+  display: block;
+  height: 2.5rem;
+  width: auto;
 }
 
 .nav-bar__links,
@@ -39,27 +55,67 @@
 .nav-bar__secondary {
   border: none;
   background: transparent;
-  padding: 0.5rem 0.85rem;
-  border-radius: 999px;
+  padding: 0.25rem 0;
   color: var(--text-muted);
-  transition: background 140ms ease, color 140ms ease;
+  transition: color 140ms ease, text-decoration-color 140ms ease;
 }
 
 .nav-bar__link:hover,
 .nav-bar__secondary:hover {
-  background: rgba(31, 106, 82, 0.08);
   color: var(--accent-strong);
 }
 
 .nav-bar__link.is-active {
-  background: rgba(31, 106, 82, 0.12);
   color: var(--accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 0.11em;
+  text-underline-offset: 0.22em;
+}
+
+.nav-bar__secondary {
+  padding: 0;
+  border-radius: 0;
+  color: var(--accent-strong);
+  box-shadow: none;
+}
+
+.nav-bar__secondary:hover {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.nav-bar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: none;
+}
+
+.nav-bar__link:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-bar__link-icon {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.18;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 840px) {
   .nav-bar__inner {
     display: grid;
     border-radius: 1.5rem;
+  }
+
+  .nav-bar__brand-image {
+    height: 2.2rem;
   }
 
   .nav-bar__links {

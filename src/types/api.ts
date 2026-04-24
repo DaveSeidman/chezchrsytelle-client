@@ -20,6 +20,7 @@ export type Product = {
   baseName: string;
   size: 'small' | 'large';
   ingredients: string[];
+  images: string[];
   price: number;
   isActive: boolean;
   sortOrder: number;
@@ -33,6 +34,10 @@ export type Store = {
   isActive: boolean;
   pickupAddress: string;
   pickupNotes: string;
+  mapLocation?: {
+    lat: number;
+    lng: number;
+  };
   markupAmount: number;
   availableProductIds: string[];
   options: Record<string, unknown>;
