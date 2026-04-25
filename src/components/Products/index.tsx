@@ -37,9 +37,9 @@ export default function Products({ products, sectionRef, selectedStoreId, stores
 
               return (
                 <article className="products-section__card" key={product._id}>
-                  {product.images?.[0] ? (
+                  {product.image ? (
                     <div className="products-section__image">
-                      <img alt={product.name} src={product.images[0]} />
+                      <img alt={product.name} src={product.image} />
                     </div>
                   ) : null}
                   <div className="products-section__meta">
@@ -50,7 +50,7 @@ export default function Products({ products, sectionRef, selectedStoreId, stores
                   <p>{product.ingredients.join(', ')}</p>
                   <div className="products-section__footer">
                     <span>${displayPrice.toFixed(2)}</span>
-                    {(selectedStore?.markupAmount ?? 0) > 0 ? <small>Includes this store&apos;s markup.</small> : null}
+                    {(selectedStore?.markupAmount ?? 0) > 0 ? <small>Includes this store's markup.</small> : null}
                   </div>
                 </article>
               );

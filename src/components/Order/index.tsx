@@ -18,6 +18,37 @@ function getTodayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function getBusinessDateParts(timeZone?: string) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timeZone || undefined,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(new Date());
+  const partMap = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return {
+    date: `${partMap.year}-${partMap.month}-${partMap.day}`,
+    hour: Number(partMap.hour),
+    minute: Number(partMap.minute)
+  };
+}
+
+function getTomorrowString(dateString: string) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  const nextDate = new Date(Date.UTC(year, month - 1, day + 1, 12));
+  return nextDate.toISOString().slice(0, 10);
+}
+
+function parseClock(value: string) {
+  const [hours, minutes] = value.split(':').map(Number);
+  return { hours, minutes };
+}
+
 export default function Order({ config, stores }: OrderProps) {
   const { login, user } = useAuth();
   const [fulfillmentDate, setFulfillmentDate] = useState(getTodayString());
@@ -73,6 +104,28 @@ export default function Order({ config, stores }: OrderProps) {
     const quantity = quantities[product._id] ?? 0;
     return sum + (product.price + (selectedStore?.markupAmount ?? 0)) * quantity;
   }, 0);
+  const cutoffWarning = (() => {
+    if (!config?.lastOrderTime || !fulfillmentDate) {
+      return '';
+    }
+
+    const businessNow = getBusinessDateParts(config.businessTimeZone);
+    const tomorrow = getTomorrowString(businessNow.date);
+
+    if (fulfillmentDate !== tomorrow) {
+      return '';
+    }
+
+    const cutoff = parseClock(config.lastOrderTime);
+    const minutesNow = businessNow.hour * 60 + businessNow.minute;
+    const minutesCutoff = cutoff.hours * 60 + cutoff.minutes;
+
+    if (minutesNow <= minutesCutoff) {
+      return '';
+    }
+
+    return `It is after ${config.lastOrderTime}. Next-day orders are not guaranteed, but you can still submit this request and we'll confirm by email if we can make it happen.`;
+  })();
 
   async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -141,7 +194,7 @@ export default function Order({ config, stores }: OrderProps) {
       {user && isApproved && hasStoreAssignments && hasSubmittedOrder ? (
         <div className="order-section__success">
           <p className="order-section__message">{message}</p>
-          <p>We&apos;ll confirm it shortly and email you if we need anything else.</p>
+          <p>We'll confirm it shortly and email you if we need anything else.</p>
           <div className="order-section__success-actions">
             <Link to="/clients/orders">View my orders</Link>
             <Link to="/clients">Back to client portal</Link>
@@ -177,6 +230,8 @@ export default function Order({ config, stores }: OrderProps) {
               Pickup: {selectedStore.pickupAddress || 'Details to follow by email'} {selectedStore.pickupNotes}
             </p>
           ) : null}
+
+          {cutoffWarning ? <p className="order-section__warning">{cutoffWarning}</p> : null}
 
           <div className="order-section__line-items">
             {products.map((product) => (

@@ -38,38 +38,44 @@ export default function ClientOrdersPage() {
   return (
     <ClientPortalShell description="Track every submitted order and watch status updates from the kitchen team." title="My Orders">
       <div className="client-orders">
-      <div className="client-orders__list">
-        {orders.map((order) => (
-          <article className="client-orders__card card" key={order._id}>
-            <div className="client-orders__top">
-              <div>
-                <h2>{getStoreName(order)}</h2>
-                <p>Fulfillment date: {order.fulfillmentDate}</p>
-              </div>
-              <StatusPill>{order.status}</StatusPill>
-            </div>
-            <ul>
-              {order.lineItems.map((lineItem, index) => (
-                <li key={`${order._id}-${index}`}>
-                  {getProductName(lineItem.productId)} x {lineItem.quantity} - ${lineItem.lineTotal.toFixed(2)}
-                </li>
+        {orders.length === 0 ? (
+          <p className="client-orders__empty">You haven't placed any orders yet.</p>
+        ) : (
+          <>
+            <div className="client-orders__list">
+              {orders.map((order) => (
+                <article className="client-orders__card card" key={order._id}>
+                  <div className="client-orders__top">
+                    <div>
+                      <h2>{getStoreName(order)}</h2>
+                      <p>Fulfillment date: {order.fulfillmentDate}</p>
+                    </div>
+                    <StatusPill>{order.status}</StatusPill>
+                  </div>
+                  <ul>
+                    {order.lineItems.map((lineItem, index) => (
+                      <li key={`${order._id}-${index}`}>
+                        {getProductName(lineItem.productId)} x {lineItem.quantity} - ${lineItem.lineTotal.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                  <strong>Total: ${order.totals.total.toFixed(2)}</strong>
+                </article>
               ))}
-            </ul>
-            <strong>Total: ${order.totals.total.toFixed(2)}</strong>
-          </article>
-        ))}
-      </div>
-      <div className="client-orders__pagination">
-        <button disabled={page <= 1} onClick={() => void loadOrders(page - 1)} type="button">
-          Previous
-        </button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <button disabled={page >= totalPages} onClick={() => void loadOrders(page + 1)} type="button">
-          Next
-        </button>
-      </div>
+            </div>
+            <div className="client-orders__pagination">
+              <button disabled={page <= 1} onClick={() => void loadOrders(page - 1)} type="button">
+                Previous
+              </button>
+              <span>
+                Page {page} of {totalPages}
+              </span>
+              <button disabled={page >= totalPages} onClick={() => void loadOrders(page + 1)} type="button">
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </ClientPortalShell>
   );

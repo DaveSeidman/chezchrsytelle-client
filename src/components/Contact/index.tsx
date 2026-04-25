@@ -2,7 +2,6 @@ import './index.scss';
 
 import { useState } from 'react';
 
-import contactImage from '../../assets/images/contact.png';
 import { apiRequest } from '../../services/api';
 
 type ContactProps = {
@@ -52,7 +51,7 @@ export default function Contact({ contactEmail, sectionRef }: ContactProps) {
         <div className="contact-section">
           <div className="contact-section__aside">
             <div className="contact-section__image">
-              <img alt="Chez Chrystelle family portrait" src={contactImage} />
+              <img alt="Chez Chrystelle family portrait" src="/contact/family.png" />
             </div>
             <p>For questions about orders, catering, or scheduling, send a note any time.</p>
             <a href={`mailto:${contactEmail}`}>{contactEmail}</a>

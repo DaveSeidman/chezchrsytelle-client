@@ -1,5 +1,6 @@
 import './index.scss';
 import logo from '../../assets/images/logo.svg';
+import { useState } from 'react';
 import type { SVGProps } from 'react';
 
 type NavBarProps = {
@@ -10,8 +11,8 @@ type NavBarProps = {
 
 const links = [
   { id: 'lets-eat', label: "Let's Eat", icon: LetsEatIcon },
-  { id: 'travel', label: 'Travel', icon: TravelIcon },
   { id: 'locations', label: 'Locations', icon: LocationsIcon },
+  { id: 'travel', label: 'Travel', icon: TravelIcon },
   { id: 'contact', label: 'Contact', icon: ContactIcon }
 ];
 
@@ -89,27 +90,58 @@ function ContactIcon(props: IconProps) {
 }
 
 export default function NavBar({ activeSection, onNavigate, onClientsClick }: NavBarProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  function handleNavigate(sectionId: string) {
+    setMobileMenuOpen(false);
+    onNavigate(sectionId);
+  }
+
+  function handleClientsClick() {
+    setMobileMenuOpen(false);
+    onClientsClick();
+  }
+
   return (
     <header className="nav-bar">
       <div className="page-shell nav-bar__inner">
-        <button className="nav-bar__brand linkish" onClick={() => onNavigate('home')} type="button">
+        <button className="nav-bar__brand linkish" onClick={() => handleNavigate('home')} type="button">
           <img alt="Chez Chrystelle" className="nav-bar__brand-image" src={logo} />
         </button>
-        <nav className="nav-bar__links" aria-label="Main navigation">
+        <button
+          aria-controls="main-navigation"
+          aria-expanded={mobileMenuOpen}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          className={mobileMenuOpen ? 'nav-bar__menu-toggle is-open' : 'nav-bar__menu-toggle'}
+          onClick={() => setMobileMenuOpen((current) => !current)}
+          type="button"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <nav
+          aria-label="Main navigation"
+          className={mobileMenuOpen ? 'nav-bar__links is-open' : 'nav-bar__links'}
+          id="main-navigation"
+        >
           {links.map((link) => (
             <button
               className={activeSection === link.id ? 'nav-bar__link is-active' : 'nav-bar__link'}
               key={link.id}
-              onClick={() => onNavigate(link.id)}
+              onClick={() => handleNavigate(link.id)}
               type="button"
             >
               <link.icon aria-hidden="true" className="nav-bar__link-icon" />
               <span>{link.label}</span>
             </button>
           ))}
+          <button className="nav-bar__secondary nav-bar__secondary--mobile" onClick={handleClientsClick} type="button">
+            Client Portal
+          </button>
         </nav>
         <div className="nav-bar__actions">
-          <button className="nav-bar__secondary" onClick={onClientsClick} type="button">
+          <button className="nav-bar__secondary" onClick={handleClientsClick} type="button">
             Client Portal
           </button>
         </div>

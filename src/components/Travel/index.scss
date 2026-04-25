@@ -28,7 +28,17 @@
 }
 
 .travel_card_image {
-  min-height: 15rem;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgba(36, 49, 38, 0.06);
+}
+
+.travel_card_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .travel_card_copy {
@@ -38,11 +48,19 @@
 
 .travel_card_place {
   font-family: var(--font-accent);
-  font-size: 0.95rem;
+  font-size: 1.35rem;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.travel_card_date {
+  font-size: 0.68rem;
   line-height: 1;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--highlight);
+  color: var(--text-muted);
 }
 
 .travel_card_copy h2,

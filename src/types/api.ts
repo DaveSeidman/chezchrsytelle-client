@@ -20,7 +20,7 @@ export type Product = {
   baseName: string;
   size: 'small' | 'large';
   ingredients: string[];
-  images: string[];
+  image: string;
   price: number;
   isActive: boolean;
   sortOrder: number;
@@ -48,6 +48,7 @@ export type Config = {
   singletonKey?: string;
   deliveryDays: number[];
   lastOrderTime: string;
+  businessTimeZone?: string;
   orderThanksMessage: string;
   contactEmail: string;
   orderNotificationEmails: string[];

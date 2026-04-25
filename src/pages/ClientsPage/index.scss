@@ -1,8 +1,10 @@
 .clients-page {
-  min-height: 100vh;
   display: grid;
+}
+
+.clients-page--signup {
+  min-height: 100vh;
   align-items: center;
-  padding: 2rem 0;
 }
 
 .clients-page__card {
@@ -22,9 +24,16 @@
   flex-wrap: wrap;
 }
 
-.clients-page__link {
+.clients-page__link,
+.clients-page__actions button {
   padding: 0.65rem 1rem;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.8);
+  box-shadow: none;
+}
+
+.clients-page__actions button:hover {
+  transform: none;
+  box-shadow: none;
 }

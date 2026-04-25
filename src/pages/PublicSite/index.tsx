@@ -13,7 +13,7 @@ import { useSectionRouting } from '../../hooks/useSectionRouting';
 import { apiRequest } from '../../services/api';
 import type { Config, Store } from '../../types/api';
 
-const sectionIds = ['home', 'lets-eat', 'travel', 'locations', 'contact'];
+const sectionIds = ['home', 'lets-eat', 'locations', 'travel', 'contact'];
 
 export default function PublicSite() {
   const navigate = useNavigate();
@@ -40,8 +40,8 @@ export default function PublicSite() {
       <div className="public-site">
         <Home sectionRef={registerSection('home')} />
         <LetsEat sectionRef={registerSection('lets-eat')} />
-        <Travel sectionRef={registerSection('travel')} />
         <Locations sectionRef={registerSection('locations')} stores={publicStores} />
+        <Travel sectionRef={registerSection('travel')} />
         <Contact contactEmail={config?.contactEmail ?? 'chrystelleseidman@gmail.com'} sectionRef={registerSection('contact')} />
       </div>
     </AppShell>

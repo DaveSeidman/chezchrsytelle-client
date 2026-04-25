@@ -11,7 +11,7 @@ const emptyProduct = {
   baseName: '',
   size: 'small' as 'small' | 'large',
   ingredients: '',
-  images: '',
+  image: '',
   price: 0,
   isActive: true,
   sortOrder: 0
@@ -24,11 +24,14 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-function parseLines(value: string) {
-  return value
-    .split('\n')
-    .map((item) => item.trim())
-    .filter(Boolean);
+function normalizeImagePath(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed || /^https?:\/\//i.test(trimmed) || trimmed.startsWith('/')) {
+    return trimmed;
+  }
+
+  return `/${trimmed}`;
 }
 
 export default function AdminProducts() {
@@ -51,11 +54,11 @@ export default function AdminProducts() {
       method: 'POST',
       body: JSON.stringify({
         ...draft,
+        image: normalizeImagePath(draft.image),
         ingredients: draft.ingredients
           .split(',')
           .map((item) => item.trim())
-          .filter(Boolean),
-        images: parseLines(draft.images)
+          .filter(Boolean)
       })
     });
 
@@ -72,11 +75,11 @@ export default function AdminProducts() {
       method: 'PATCH',
       body: JSON.stringify({
         ...editingDraft,
+        image: normalizeImagePath(editingDraft.image),
         ingredients: editingDraft.ingredients
           .split(',')
           .map((item) => item.trim())
-          .filter(Boolean),
-        images: parseLines(editingDraft.images)
+          .filter(Boolean)
       })
     });
 
@@ -108,7 +111,7 @@ export default function AdminProducts() {
       baseName: product.baseName,
       size: product.size,
       ingredients: product.ingredients.join(', '),
-      images: (product.images ?? []).join('\n'),
+      image: product.image ? product.image.replace(/^\//, '') : '',
       price: product.price,
       isActive: product.isActive,
       sortOrder: product.sortOrder
@@ -191,22 +194,19 @@ export default function AdminProducts() {
           />
         </label>
         <label>
-          Image URLs
-          <textarea
-            onChange={(event) => setProductDraft((current) => ({ ...current, images: event.target.value }))}
-            placeholder={'One image URL per line\nhttps://chezchrystelle.com/products/plain-salad-1.jpg'}
-            rows={4}
-            value={productDraft.images}
+          Image URL
+          <input
+            onChange={(event) => setProductDraft((current) => ({ ...current, image: event.target.value }))}
+            placeholder="products/plain-salad-small.png"
+            value={productDraft.image}
           />
         </label>
-        {parseLines(productDraft.images).length ? (
+        {productDraft.image ? (
           <div className="admin-products__image-preview-grid">
-            {parseLines(productDraft.images).map((imageUrl) => (
-              <div className="admin-products__image-preview" key={imageUrl}>
-                <img alt="" src={imageUrl} />
-                <small>{imageUrl}</small>
-              </div>
-            ))}
+            <div className="admin-products__image-preview">
+              <img alt="" src={normalizeImagePath(productDraft.image)} />
+              <small>{normalizeImagePath(productDraft.image)}</small>
+            </div>
           </div>
         ) : null}
         <label className="admin-products__checkbox">
@@ -247,10 +247,10 @@ export default function AdminProducts() {
                   <span>{formatCurrency(product.price)}</span>
                 </div>
                 <p>{product.ingredients.join(', ')}</p>
-                <p>Images: {(product.images ?? []).length}</p>
-                {(product.images ?? [])[0] ? (
+                <p>Image: {product.image ? 'set' : 'not set'}</p>
+                {product.image ? (
                   <div className="admin-products__card-image">
-                    <img alt={product.name} src={product.images[0]} />
+                    <img alt={product.name} src={product.image} />
                   </div>
                 ) : null}
               </div>

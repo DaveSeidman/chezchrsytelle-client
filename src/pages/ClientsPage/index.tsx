@@ -25,25 +25,27 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="clients-page page-shell">
+    <>
       {!user ? (
-        <div className="clients-page__card card">
-          <h1>Client Portal</h1>
-          {errorMessage ? <p>{errorMessage}</p> : null}
-          {isLoading ? <p>Loading account...</p> : null}
-          {!isLoading && !user ? (
-            <div className="stack">
-              <p>Stores can sign up here with Google to request access to the weekly salad ordering portal.</p>
-              <button className="primary" onClick={login} type="button">
-                Sign up for salads
-              </button>
-              {isDevLoginEnabled() ? (
-                <button onClick={startDevLogin} type="button">
-                  Use local dev login
+        <div className="clients-page clients-page--signup page-shell">
+          <div className="clients-page__card card">
+            <h1>Client Portal</h1>
+            {errorMessage ? <p>{errorMessage}</p> : null}
+            {isLoading ? <p>Loading account...</p> : null}
+            {!isLoading && !user ? (
+              <div className="stack">
+                <p>Sign up here to request access to the ordering portal.</p>
+                <button className="primary" onClick={login} type="button">
+                  Sign up
                 </button>
-              ) : null}
-            </div>
-          ) : null}
+                {isDevLoginEnabled() ? (
+                  <button onClick={startDevLogin} type="button">
+                    Use local dev login
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
@@ -60,36 +62,28 @@ export default function ClientsPage() {
               <span>Status</span>
               <StatusPill>{user.isAdmin ? 'confirmed' : user.status}</StatusPill>
             </div>
-            <p>
-              {isApproved
-                ? 'You can place new orders from this client portal and review every past order below.'
-                : isDenied
+            {isApproved ? (
+              <p>
+                You can <Link to="/clients/order">place new orders</Link> from this client portal and{' '}
+                <Link to="/clients/orders">review every past order</Link> below.
+              </p>
+            ) : (
+              <p>
+                {isDenied
                   ? 'Your request was declined. Reach out through the contact form if you would like us to review it again.'
                   : 'Thanks for signing up. Your account is waiting for admin approval before ordering unlocks.'}
-            </p>
+              </p>
+            )}
             <div className="clients-page__actions">
-              {isApproved ? (
-                <Link className="clients-page__link" to="/clients/order">
-                  Place an order
-                </Link>
-              ) : null}
-              {isApproved ? (
-                <Link className="clients-page__link" to="/clients/orders">
-                  View my orders
-                </Link>
-              ) : null}
               {user.isAdmin ? (
                 <Link className="clients-page__link" to="/admin">
                   Open admin
                 </Link>
               ) : null}
-              <button onClick={logout} type="button">
-                Log out
-              </button>
             </div>
           </div>
         </ClientPortalShell>
       ) : null}
-    </div>
+    </>
   );
 }

@@ -9,14 +9,26 @@ import type { Order, OrderStatus, PaginatedResponse } from '../../types/api';
 const statuses: OrderStatus[] = ['pending', 'confirmed', 'ready', 'completed', 'cancelled'];
 
 function getUserName(order: Order) {
+  if (!order.userId) {
+    return 'Unknown user';
+  }
+
   return typeof order.userId === 'string' ? order.userId : order.userId.displayName;
 }
 
 function getStoreName(order: Order) {
+  if (!order.storeId) {
+    return 'Unknown store';
+  }
+
   return typeof order.storeId === 'string' ? order.storeId : order.storeId.name;
 }
 
 function getProductName(productId: Order['lineItems'][number]['productId']) {
+  if (!productId) {
+    return 'Unknown product';
+  }
+
   if (typeof productId === 'string') {
     return productId;
   }

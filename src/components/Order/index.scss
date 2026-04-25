@@ -17,6 +17,15 @@
   margin: 0;
 }
 
+.order-section__warning {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(207, 122, 52, 0.22);
+  border-radius: 1rem;
+  background: rgba(255, 238, 223, 0.82);
+  color: #8f5626;
+}
+
 .order-section__store-readout {
   min-height: 3.25rem;
   padding: 0.92rem 1rem;

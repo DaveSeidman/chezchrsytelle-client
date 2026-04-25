@@ -45,6 +45,11 @@
   padding: 0.8rem 0.95rem;
   border-radius: 1rem;
   color: var(--text-muted);
+  text-decoration: none;
+}
+
+.client-portal__header-actions a {
+  text-decoration: none;
 }
 
 .client-portal__nav a.is-active {
@@ -53,6 +58,7 @@
 }
 
 @media (max-width: 900px) {
+
   .client-portal__header,
   .client-portal__header-actions {
     display: grid;

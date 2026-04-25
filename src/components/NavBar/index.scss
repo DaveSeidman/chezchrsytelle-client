@@ -43,6 +43,46 @@
   width: auto;
 }
 
+.nav-bar__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.26rem;
+  flex-direction: column;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent-strong);
+}
+
+.nav-bar__menu-toggle:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-bar__menu-toggle span {
+  width: 1.2rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+
+.nav-bar__menu-toggle.is-open span:nth-child(1) {
+  transform: translateY(0.36rem) rotate(45deg);
+}
+
+.nav-bar__menu-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-bar__menu-toggle.is-open span:nth-child(3) {
+  transform: translateY(-0.36rem) rotate(-45deg);
+}
+
 .nav-bar__links,
 .nav-bar__actions {
   display: flex;
@@ -61,6 +101,7 @@
   background: transparent;
   padding: 0.25rem 0;
   color: var(--text-muted);
+  text-decoration: none;
   transition: color 140ms ease, text-decoration-color 140ms ease;
 }
 
@@ -81,6 +122,10 @@
   border-radius: 0;
   color: var(--accent-strong);
   box-shadow: none;
+}
+
+.nav-bar__secondary--mobile {
+  display: none;
 }
 
 .nav-bar__secondary:hover {
@@ -123,21 +168,33 @@
     height: 2.2rem;
   }
 
-  .nav-bar__links {
-    grid-column: 1 / -1;
-    justify-content: flex-start;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    gap: 1.25rem;
-    padding-bottom: 0.15rem;
-    scrollbar-width: none;
+  .nav-bar__menu-toggle {
+    display: inline-flex;
   }
 
-  .nav-bar__links::-webkit-scrollbar {
+  .nav-bar__links {
+    grid-column: 1 / -1;
     display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding-top: 0.4rem;
+  }
+
+  .nav-bar__links.is-open {
+    display: flex;
   }
 
   .nav-bar__actions {
     justify-content: flex-end;
+  }
+
+  .nav-bar__actions .nav-bar__secondary {
+    display: none;
+  }
+
+  .nav-bar__secondary--mobile {
+    display: inline-flex;
+    padding-top: 0.35rem;
   }
 }

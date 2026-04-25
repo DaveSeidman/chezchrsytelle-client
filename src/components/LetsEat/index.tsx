@@ -4,19 +4,15 @@ type LetsEatProps = {
   sectionRef: (element: HTMLElement | null) => void;
 };
 
-const saladImage = new URL('../../assets/images/salads.png', import.meta.url).href;
-const familyDinnersImage = new URL('../../assets/images/family-dinners.png', import.meta.url).href;
-const cateringImage = new URL('../../assets/images/catering.png', import.meta.url).href;
-
 export default function LetsEat({ sectionRef }: LetsEatProps) {
   return (
     <div className="page lets-eat" id="lets-eat" ref={sectionRef}>
-      <h1 className="page_title">Let&apos;s Eat</h1>
+      <h1 className="page_title">Let's Eat!</h1>
       <div className="page_body">
         <div className="lets-eat_section">
           <div className="lets-eat_column">
             <div className="lets-eat_image">
-              <img alt="Family dinners at Chez Chrystelle" src={familyDinnersImage} />
+              <img alt="Family dinners at Chez Chrystelle" src="/food/family-dinners.png" />
             </div>
             <div className="lets-eat_copy">
               <h2>Family Dinners</h2>
@@ -33,7 +29,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
 
           <div className="lets-eat_column">
             <div className="lets-eat_image">
-              <img alt="Magic Kale Salad varieties" src={saladImage} />
+              <img alt="Magic Kale Salad varieties" src="/food/salads.png" />
             </div>
             <div className="lets-eat_copy">
               <h2>Magic Kale Salad</h2>
@@ -41,7 +37,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 Our Magic Kale Salad comes in four varieties: plain, vegan, grilled chicken, and grilled salmon.
               </p>
               <p>
-                They&apos;re balanced, nutritious, and deeply delicious, built to feel like the kind of lunch that actually
+                They're balanced, nutritious, and deeply delicious, built to feel like the kind of lunch that actually
                 carries you through the rest of the day.
               </p>
               <p>
@@ -53,7 +49,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
 
           <div className="lets-eat_column">
             <div className="lets-eat_image">
-              <img alt="Chez Chrystelle catering spread" src={cateringImage} />
+              <img alt="Chez Chrystelle catering spread" src="/food/catering.png" />
             </div>
             <div className="lets-eat_copy">
               <h2>Catering</h2>
