@@ -12,7 +12,7 @@ export default function Home({ sectionRef }: HomeProps) {
         <div className="home-section">
           <div className="home-section__copy">
             <p>
-              My name is Chrystelle and I am a <strong>Proud Cameroonian mama</strong> living in Brooklyn with my husband and
+              My name is Chrystelle and I am a <strong>Proud Cameroonian Mama</strong> living in Brooklyn with my husband and
               three growing children and <em>ChezChrystelle</em> is how we share our home with <strong>you!</strong>
             </p>
             <p>

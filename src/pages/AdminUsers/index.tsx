@@ -17,8 +17,24 @@ function getReviewPriority(user: User) {
   return 1;
 }
 
+function getEffectiveStatus(user: User) {
+  return user.isAdmin ? 'approved' : user.status;
+}
+
+function getUsersById(users: User[]) {
+  return Object.fromEntries(users.map((user) => [user._id, user]));
+}
+
+function haveSameStoreIds(left: string[], right: string[]) {
+  const normalizedLeft = [...left].sort();
+  const normalizedRight = [...right].sort();
+
+  return normalizedLeft.length === normalizedRight.length && normalizedLeft.every((storeId, index) => storeId === normalizedRight[index]);
+}
+
 export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
+  const [savedUsers, setSavedUsers] = useState<Record<string, User>>({});
   const [stores, setStores] = useState<Store[]>([]);
   const [message, setMessage] = useState('');
 
@@ -29,6 +45,7 @@ export default function AdminUsers() {
     ]);
 
     setUsers(userResponse);
+    setSavedUsers(getUsersById(userResponse));
     setStores(storeResponse);
   }
 
@@ -36,10 +53,43 @@ export default function AdminUsers() {
     void loadUsers();
   }, []);
 
-  async function updateUser(userId: string, updates: Partial<User>) {
-    await apiRequest(`/api/admin/users/${userId}`, {
+  function updateDraftUser(userId: string, updates: Partial<User>) {
+    setUsers((currentUsers) =>
+      currentUsers.map((user) => {
+        if (user._id !== userId) {
+          return user;
+        }
+
+        return {
+          ...user,
+          ...updates
+        };
+      })
+    );
+  }
+
+  function isDirty(user: User) {
+    const savedUser = savedUsers[user._id];
+
+    if (!savedUser) {
+      return false;
+    }
+
+    return (
+      savedUser.status !== user.status ||
+      Boolean(savedUser.isAdmin) !== Boolean(user.isAdmin) ||
+      !haveSameStoreIds(savedUser.assignedStoreIds, user.assignedStoreIds)
+    );
+  }
+
+  async function saveUser(user: User) {
+    await apiRequest(`/api/admin/users/${user._id}`, {
       method: 'PATCH',
-      body: JSON.stringify(updates)
+      body: JSON.stringify({
+        status: user.status,
+        isAdmin: user.isAdmin,
+        assignedStoreIds: user.assignedStoreIds
+      })
     });
     setMessage('User updated');
     await loadUsers();
@@ -49,7 +99,6 @@ export default function AdminUsers() {
     <div className="admin-users stack">
       <div>
         <h2>Users</h2>
-        <p>Review new signups, approve or deny access, grant admin access, and adjust user-specific markup.</p>
       </div>
       {message ? <p>{message}</p> : null}
       <div className="admin-users__table">
@@ -69,49 +118,64 @@ export default function AdminUsers() {
               <strong>{user.displayName}</strong>
               <p>{user.email}</p>
             </div>
-            <div className="admin-users__status">
-              <span>Status: {user.isAdmin ? 'approved' : user.status}</span>
-              <div className="admin-users__actions">
-                <button onClick={() => updateUser(user._id, { status: 'approved' })} type="button">
-                  Approve
-                </button>
-                <button onClick={() => updateUser(user._id, { status: 'denied' })} type="button">
-                  Deny
-                </button>
-                <button onClick={() => updateUser(user._id, { status: 'pending' })} type="button">
-                  Reset
-                </button>
+            {!user.isAdmin ? (
+              <div className="admin-users__status">
+                <div className="admin-users__actions">
+                  <button
+                    className={getEffectiveStatus(user) === 'approved' ? 'is-active' : ''}
+                    onClick={() => updateDraftUser(user._id, { status: 'approved' })}
+                    type="button"
+                  >
+                    Approved
+                  </button>
+                  <button
+                    className={getEffectiveStatus(user) === 'denied' ? 'is-active' : ''}
+                    onClick={() => updateDraftUser(user._id, { status: 'denied' })}
+                    type="button"
+                  >
+                    Denied
+                  </button>
+                  <button
+                    className={getEffectiveStatus(user) === 'pending' ? 'is-active' : ''}
+                    onClick={() => updateDraftUser(user._id, { status: 'pending' })}
+                    type="button"
+                  >
+                    Pending
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : null}
             <div className="admin-users__stores">
-              <span>Stores</span>
-              <div className="admin-users__store-list">
+              <select
+                className="admin-users__store-select"
+                multiple
+                onChange={(event) => {
+                  const nextStoreIds = Array.from(event.target.selectedOptions, (option) => option.value);
+                  updateDraftUser(user._id, { assignedStoreIds: nextStoreIds } as Partial<User>);
+                }}
+                size={Math.min(Math.max(stores.length, 2), 6)}
+                value={user.assignedStoreIds}
+              >
                 {stores.map((store) => (
-                  <label key={`${user._id}-${store._id}`}>
-                    <input
-                      checked={user.assignedStoreIds.includes(store._id)}
-                      onChange={(event) => {
-                        const nextStoreIds = event.target.checked
-                          ? [...user.assignedStoreIds, store._id]
-                          : user.assignedStoreIds.filter((storeId) => storeId !== store._id);
-
-                        void updateUser(user._id, { assignedStoreIds: nextStoreIds } as Partial<User>);
-                      }}
-                      type="checkbox"
-                    />
+                  <option key={`${user._id}-${store._id}`} value={store._id}>
                     {store.name}
-                  </label>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
-            <label>
+            <label className="admin-users__admin">
               Admin
               <input
                 checked={user.isAdmin}
-                onChange={(event) => updateUser(user._id, { isAdmin: event.target.checked })}
+                onChange={(event) => updateDraftUser(user._id, { isAdmin: event.target.checked })}
                 type="checkbox"
               />
             </label>
+            <div className="admin-users__save">
+              <button disabled={!isDirty(user)} onClick={() => void saveUser(user)} type="button">
+                Save
+              </button>
+            </div>
           </div>
         ))}
       </div>
