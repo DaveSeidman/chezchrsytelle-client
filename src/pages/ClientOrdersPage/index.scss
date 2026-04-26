@@ -2,6 +2,13 @@
   padding: 2rem 0 4rem;
 }
 
+.client-orders__notice {
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(216, 235, 223, 0.42));
+}
+
 .client-orders__header,
 .client-orders__top {
   display: flex;

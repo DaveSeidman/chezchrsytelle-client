@@ -21,13 +21,13 @@ export default function App() {
   );
 
   const clientOrderRoute = (
-    <ProtectedRoute requireApproved>
+    <ProtectedRoute>
       <ClientOrderPage />
     </ProtectedRoute>
   );
 
   const clientOrdersRoute = (
-    <ProtectedRoute requireApproved>
+    <ProtectedRoute>
       <ClientOrdersPage />
     </ProtectedRoute>
   );

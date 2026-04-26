@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import ClientPortalShell from '../../components/ClientPortalShell';
 import StatusPill from '../../components/StatusPill';
+import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import type { Order, PaginatedResponse } from '../../types/api';
 
@@ -20,9 +21,12 @@ function getProductName(productId: Order['lineItems'][number]['productId']) {
 }
 
 export default function ClientOrdersPage() {
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const isApproved = Boolean(user && (user.status === 'approved' || user.isApproved || user.isAdmin));
+  const isDenied = Boolean(user && user.status === 'denied' && !user.isAdmin);
 
   async function loadOrders(targetPage = 1) {
     const response = await apiRequest<PaginatedResponse<Order>>(`/api/orders/me?page=${targetPage}&pageSize=20`);
@@ -32,13 +36,28 @@ export default function ClientOrdersPage() {
   }
 
   useEffect(() => {
+    if (!isApproved) {
+      setOrders([]);
+      setPage(1);
+      setTotalPages(1);
+      return;
+    }
+
     void loadOrders();
-  }, []);
+  }, [isApproved]);
 
   return (
     <ClientPortalShell description="Track every submitted order and watch status updates from the kitchen team." title="My Orders">
       <div className="client-orders">
-        {orders.length === 0 ? (
+        {!isApproved ? (
+          <div className="client-orders__notice">
+            <p>
+              {isDenied
+                ? 'Order history is unavailable because this account was denied. Reach out through the contact form if you would like us to review it again.'
+                : "This page will unlock once your account is approved. You'll be able to review every order you place here."}
+            </p>
+          </div>
+        ) : orders.length === 0 ? (
           <p className="client-orders__empty">You haven't placed any orders yet.</p>
         ) : (
           <>

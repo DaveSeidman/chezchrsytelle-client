@@ -71,7 +71,7 @@ export default function ClientsPage() {
               <p>
                 {isDenied
                   ? 'Your request was declined. Reach out through the contact form if you would like us to review it again.'
-                  : 'Thanks for signing up. Your account is waiting for admin approval before ordering unlocks.'}
+                  : 'Thanks for signing up. Once your account is approved, you can place and check the status of your orders.'}
               </p>
             )}
             <div className="clients-page__actions">
