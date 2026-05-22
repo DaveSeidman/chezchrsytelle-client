@@ -36,4 +36,8 @@
   .home-section {
     grid-template-columns: 1fr;
   }
+
+  .home-section__image {
+    order: -1;
+  }
 }
