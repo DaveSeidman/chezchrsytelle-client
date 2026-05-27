@@ -42,7 +42,7 @@ export default function PublicSite() {
         <LetsEat sectionRef={registerSection('lets-eat')} />
         <Locations sectionRef={registerSection('locations')} stores={publicStores} />
         <Travel sectionRef={registerSection('travel')} />
-        <Contact contactEmail={config?.contactEmail ?? 'chrystelleseidman@gmail.com'} sectionRef={registerSection('contact')} />
+        <Contact contactEmail={config?.contactEmail ?? 'info@chezchrystelle.com'} sectionRef={registerSection('contact')} />
       </div>
     </AppShell>
   );

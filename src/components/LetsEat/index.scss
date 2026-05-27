@@ -1,6 +1,6 @@
 .lets-eat_section {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.5rem;
 }
 
@@ -8,10 +8,11 @@
   display: grid;
   gap: 1rem;
   align-content: start;
+  margin-bottom: 1rem;
 }
 
 .lets-eat_image {
-  aspect-ratio: 1 / 1;
+  height: min(400px, 52vw);
   overflow: hidden;
   border-radius: 1.35rem;
   border: 1px solid rgba(36, 49, 38, 0.08);
@@ -27,6 +28,8 @@
 .lets-eat_copy {
   display: grid;
   gap: 0.9rem;
+  align-content: start;
+  justify-items: start;
 }
 
 .lets-eat_copy h2,
@@ -34,14 +37,27 @@
   margin: 0;
 }
 
-@media (max-width: 1040px) {
-  .lets-eat_section {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.lets-eat_cta {
+  display: inline;
+  margin-top: 0.1rem;
+  color: var(--accent-strong);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.22em;
+}
+
+.lets-eat_cta:hover {
+  color: var(--accent);
 }
 
 @media (max-width: 760px) {
   .lets-eat_section {
     grid-template-columns: 1fr;
+  }
+
+  .lets-eat_image {
+    height: min(400px, 74vw);
   }
 }

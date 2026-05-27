@@ -61,6 +61,7 @@ export default function Contact({ contactEmail, sectionRef }: ContactProps) {
               <label>
                 Your name
                 <input
+                  id="contact-name"
                   onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
                   required
                   value={form.name}

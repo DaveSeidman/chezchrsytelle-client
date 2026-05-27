@@ -5,6 +5,17 @@ type LetsEatProps = {
 };
 
 export default function LetsEat({ sectionRef }: LetsEatProps) {
+  function focusContactName(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.history.pushState(null, '', '#contact');
+
+    window.setTimeout(() => {
+      document.getElementById('contact-name')?.focus({ preventScroll: true });
+    }, 450);
+  }
+
   return (
     <div className="page lets-eat" id="lets-eat" ref={sectionRef}>
       <h1 className="page_title">Let's Eat!</h1>
@@ -44,12 +55,38 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 Perfect for grab-and-go shelves, office lunches, and everyday regulars who want something fresh, filling, and
                 easy to love.
               </p>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+                Ask about salads
+              </a>
             </div>
           </div>
 
           <div className="lets-eat_column">
             <div className="lets-eat_image">
-              <img alt="Chez Chrystelle catering spread" src="/food/catering.png" />
+              <img alt="Chefs Table dinner in the Chez Chrystelle backyard" src="/food/chefs-table.png" />
+            </div>
+            <div className="lets-eat_copy">
+              <h2>Chefs Table</h2>
+              <p>
+                Reserve our private backyard in Greenwood and dine beneath the stars with a meal prepared and served by Chez
+                Chrystelle.
+              </p>
+              <p>
+                We can seat intimate parties of 2 through 20, with private service shaped around the night you want to host.
+              </p>
+              <p>
+                It is personal, relaxed, and celebratory: a backyard table with the warmth of home and the care of a special
+                occasion.
+              </p>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+                Reserve the table
+              </a>
+            </div>
+          </div>
+
+          <div className="lets-eat_column">
+            <div className="lets-eat_image">
+              <img alt="Chez Chrystelle catering service" src="/food/catering.png" />
             </div>
             <div className="lets-eat_copy">
               <h2>Catering</h2>
@@ -61,6 +98,9 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 This section is still a placeholder for now, but it will eventually outline packages, serving formats, and how
                 to book us for larger meals.
               </p>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+                Plan catering
+              </a>
             </div>
           </div>
         </div>
