@@ -11,7 +11,7 @@ type NavBarProps = {
 
 const links = [
   { id: 'lets-eat', label: "Let's Eat", icon: LetsEatIcon },
-  { id: 'locations', label: 'Locations', icon: LocationsIcon },
+  // { id: 'locations', label: 'Locations', icon: LocationsIcon },
   { id: 'travel', label: 'Travel', icon: TravelIcon },
   { id: 'contact', label: 'Contact', icon: ContactIcon }
 ];
