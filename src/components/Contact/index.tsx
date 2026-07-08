@@ -1,27 +1,86 @@
 import './index.scss';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { apiRequest } from '../../services/api';
 
 type ContactProps = {
   contactEmail: string;
+  contactReason: string;
   sectionRef: (element: HTMLElement | null) => void;
 };
 
-export default function Contact({ contactEmail, sectionRef }: ContactProps) {
+const contactMethodValidationMessage = 'We need a way to get back to you, please add your email address or phone number';
+const phoneValidationMessage = 'Please add a valid phone number';
+
+function isValidPhoneNumber(phone: string) {
+  const trimmedPhone = phone.trim();
+
+  if (!trimmedPhone) {
+    return false;
+  }
+
+  const digitCount = trimmedPhone.replace(/\D/g, '').length;
+
+  return /^[+\d\s().-]+$/.test(trimmedPhone) && digitCount >= 10 && digitCount <= 15;
+}
+
+export default function Contact({ contactEmail, contactReason, sectionRef }: ContactProps) {
+  const emailInput = useRef<HTMLInputElement | null>(null);
+  const phoneInput = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     message: '',
-    newsletter: false
+    newsletter: false,
+    contactReason
   });
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    setForm((current) => ({ ...current, contactReason }));
+  }, [contactReason]);
+
+  function clearContactMethodValidation() {
+    emailInput.current?.setCustomValidity('');
+    phoneInput.current?.setCustomValidity('');
+  }
+
+  function validateContactMethod() {
+    const email = form.email.trim();
+    const phone = form.phone.trim();
+
+    if (email) {
+      clearContactMethodValidation();
+      return true;
+    }
+
+    if (phone) {
+      if (isValidPhoneNumber(phone)) {
+        clearContactMethodValidation();
+        return true;
+      }
+
+      phoneInput.current?.setCustomValidity(phoneValidationMessage);
+      phoneInput.current?.reportValidity();
+      return false;
+    }
+
+    emailInput.current?.setCustomValidity(contactMethodValidationMessage);
+    emailInput.current?.reportValidity();
+    return false;
+  }
+
   async function submitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage('');
+
+    if (!validateContactMethod()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -33,8 +92,10 @@ export default function Contact({ contactEmail, sectionRef }: ContactProps) {
       setForm({
         name: '',
         email: '',
+        phone: '',
         message: '',
-        newsletter: false
+        newsletter: false,
+        contactReason
       });
       setMessage('Thanks for reaching out. Your message has been sent.');
     } catch (error) {
@@ -63,6 +124,8 @@ export default function Contact({ contactEmail, sectionRef }: ContactProps) {
                 <input
                   id="contact-name"
                   onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+                  onInvalid={(event) => event.currentTarget.setCustomValidity('Tell us who you are')}
+                  onInput={(event) => event.currentTarget.setCustomValidity('')}
                   required
                   value={form.name}
                 />
@@ -70,17 +133,35 @@ export default function Contact({ contactEmail, sectionRef }: ContactProps) {
               <label>
                 Your email
                 <input
-                  onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-                  required
+                  onChange={(event) => {
+                    setForm((current) => ({ ...current, email: event.target.value }));
+                    clearContactMethodValidation();
+                  }}
+                  ref={emailInput}
                   type="email"
                   value={form.email}
                 />
               </label>
+              <label>
+                Your phone
+                <input
+                  onChange={(event) => {
+                    setForm((current) => ({ ...current, phone: event.target.value }));
+                    clearContactMethodValidation();
+                  }}
+                  ref={phoneInput}
+                  type="tel"
+                  value={form.phone}
+                />
+              </label>
             </div>
+            <input name="contactReason" type="hidden" value={form.contactReason} />
             <label>
               Message
               <textarea
                 onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
+                onInvalid={(event) => event.currentTarget.setCustomValidity('What would you like to say')}
+                onInput={(event) => event.currentTarget.setCustomValidity('')}
                 required
                 rows={6}
                 value={form.message}

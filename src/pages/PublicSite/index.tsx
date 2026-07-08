@@ -20,6 +20,7 @@ export default function PublicSite() {
   const { activeSection, navigateToSection, registerSection } = useSectionRouting(sectionIds);
   const [config, setConfig] = useState<Config | null>(null);
   const [publicStores, setPublicStores] = useState<Store[]>([]);
+  const [contactReason, setContactReason] = useState('');
 
   useEffect(() => {
     async function loadInitialData() {
@@ -39,10 +40,14 @@ export default function PublicSite() {
     <AppShell activeSection={activeSection} onClientsClick={() => navigate('/clients')} onNavigate={navigateToSection}>
       <div className="public-site">
         <Home sectionRef={registerSection('home')} />
-        <LetsEat sectionRef={registerSection('lets-eat')} />
-        <Locations sectionRef={registerSection('locations')} stores={publicStores} />
+        <LetsEat onContactReason={setContactReason} sectionRef={registerSection('lets-eat')} />
+        {/* <Locations sectionRef={registerSection('locations')} stores={publicStores} /> */}
         <Travel sectionRef={registerSection('travel')} />
-        <Contact contactEmail={config?.contactEmail ?? 'info@chezchrystelle.com'} sectionRef={registerSection('contact')} />
+        <Contact
+          contactEmail={config?.contactEmail ?? 'info@chezchrystelle.com'}
+          contactReason={contactReason}
+          sectionRef={registerSection('contact')}
+        />
       </div>
     </AppShell>
   );

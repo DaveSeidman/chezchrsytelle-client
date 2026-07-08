@@ -1,19 +1,23 @@
 import './index.scss';
 
 type LetsEatProps = {
+  onContactReason: (reason: string) => void;
   sectionRef: (element: HTMLElement | null) => void;
 };
 
-export default function LetsEat({ sectionRef }: LetsEatProps) {
-  function focusContactName(event: React.MouseEvent<HTMLAnchorElement>) {
-    event.preventDefault();
+export default function LetsEat({ onContactReason, sectionRef }: LetsEatProps) {
+  function focusContactName(reason: string) {
+    return (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      onContactReason(reason);
 
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    window.history.pushState(null, '', '#contact');
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.pushState(null, '', '#contact');
 
-    window.setTimeout(() => {
-      document.getElementById('contact-name')?.focus({ preventScroll: true });
-    }, 450);
+      window.setTimeout(() => {
+        document.getElementById('contact-name')?.focus({ preventScroll: true });
+      }, 450);
+    };
   }
 
   return (
@@ -55,7 +59,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 Perfect for grab-and-go shelves, office lunches, and everyday regulars who want something fresh, filling, and
                 easy to love.
               </p>
-              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName('Ask about salads')}>
                 Ask about salads
               </a>
             </div>
@@ -78,7 +82,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 It is personal, relaxed, and celebratory: a backyard table with the warmth of home and the care of a special
                 occasion.
               </p>
-              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName('Reserve the table')}>
                 Reserve the table
               </a>
             </div>
@@ -98,7 +102,7 @@ export default function LetsEat({ sectionRef }: LetsEatProps) {
                 This section is still a placeholder for now, but it will eventually outline packages, serving formats, and how
                 to book us for larger meals.
               </p>
-              <a className="lets-eat_cta" href="#contact" onClick={focusContactName}>
+              <a className="lets-eat_cta" href="#contact" onClick={focusContactName('Plan catering')}>
                 Plan catering
               </a>
             </div>
