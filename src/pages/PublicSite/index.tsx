@@ -44,7 +44,7 @@ export default function PublicSite() {
         {/* <Locations sectionRef={registerSection('locations')} stores={publicStores} /> */}
         <Travel sectionRef={registerSection('travel')} />
         <Contact
-          contactEmail={config?.contactEmail ?? 'info@chezchrystelle.com'}
+          contactEmail={config?.contactEmail ?? 'hello@chezchrystelle.com'}
           contactReason={contactReason}
           sectionRef={registerSection('contact')}
         />

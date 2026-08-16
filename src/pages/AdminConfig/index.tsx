@@ -19,9 +19,9 @@ const emptyConfig: Config = {
   deliveryDays: [1, 2, 3, 4, 5, 6],
   lastOrderTime: '20:00',
   orderThanksMessage: 'Thank you for your order!',
-  contactEmail: 'info@chezchrystelle.com',
-  orderNotificationEmails: ['info@chezchrystelle.com'],
-  signupNotificationEmails: ['info@chezchrystelle.com']
+  contactEmail: 'hello@chezchrystelle.com',
+  orderNotificationEmails: ['hello@chezchrystelle.com'],
+  signupNotificationEmails: ['hello@chezchrystelle.com']
 };
 
 export default function AdminConfig() {
