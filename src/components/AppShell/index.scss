@@ -2,3 +2,31 @@
   min-height: 100vh;
   padding-bottom: 4rem;
 }
+
+.app-footer {
+  margin: 1.5rem auto 0;
+  padding: 0 0.5rem;
+  color: var(--text-muted);
+}
+
+.app-footer__assurances {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.app-footer__copyright {
+  margin: 0.8rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 680px) {
+  .app-footer {
+    padding: 0 0.25rem;
+  }
+}

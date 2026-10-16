@@ -1,7 +1,7 @@
 import './index.scss';
 import 'leaflet/dist/leaflet.css';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 
 import type { Store } from '../../types/api';
@@ -11,139 +11,137 @@ type LocationsProps = {
   stores: Store[];
 };
 
-type PositionedStore = {
-  lat: number;
-  lng: number;
-  store: Store;
+type MapStore = Pick<Store, '_id' | 'name' | 'pickupAddress' | 'pickupNotes'> & {
+  mapLocation: { lat: number; lng: number };
+};
+
+const foodGardenMarket: MapStore = {
+  _id: 'food-garden-market-4th-ave',
+  name: 'Food Garden Market',
+  pickupAddress: '102 4th Ave, Brooklyn, NY 11217',
+  pickupNotes: '',
+  mapLocation: { lat: 40.681442, lng: -73.9805922 }
 };
 
 export default function Locations({ sectionRef, stores }: LocationsProps) {
-  const availableStores = stores
-    .filter((store) => store.pickupAddress.trim().length > 0)
-    .filter((store) => typeof store.mapLocation?.lat === 'number' && typeof store.mapLocation?.lng === 'number');
   const [selectedStoreId, setSelectedStoreId] = useState('');
   const mapElementRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.LayerGroup | null>(null);
-  const positionedStores: PositionedStore[] = availableStores.map((store) => ({
-    store,
-    lat: store.mapLocation!.lat,
-    lng: store.mapLocation!.lng
-  }));
+  const availableStores = useMemo(() => {
+    const locations: MapStore[] = stores.filter((store): store is Store & MapStore =>
+      store.pickupAddress.trim().length > 0 &&
+      typeof store.mapLocation?.lat === 'number' && Number.isFinite(store.mapLocation.lat) &&
+      typeof store.mapLocation?.lng === 'number' && Number.isFinite(store.mapLocation.lng)
+    );
+
+    if (!locations.some((store) => /^102\s+(4th|fourth)\s+(ave|avenue)\b/i.test(store.pickupAddress.trim()))) {
+      locations.push(foodGardenMarket);
+    }
+    return locations;
+  }, [stores]);
 
   useEffect(() => {
-    if (!mapElementRef.current || mapRef.current || !positionedStores.length) {
-      return;
-    }
+    if (!mapElementRef.current) return;
 
-    const map = L.map(mapElementRef.current, {
-      scrollWheelZoom: false,
-      zoomControl: false
+    const map = L.map(mapElementRef.current, { scrollWheelZoom: false, zoomControl: false });
+    map.setMaxZoom(19);
+    map.attributionControl.addAttribution(
+      '<a href="https://openfreemap.org/">OpenFreeMap</a> · ' +
+      '&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> · ' +
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    );
+    void import('./basemap').then(({ createBasemap }) => {
+      if (mapRef.current === map) createBasemap().addTo(map);
     });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    L.control
-      .zoom({
-        position: 'topright'
-      })
-      .addTo(map);
-
+    L.control.zoom({ position: 'topright' }).addTo(map);
     mapRef.current = map;
     markerLayerRef.current = L.layerGroup().addTo(map);
+    const observer = new ResizeObserver(() => map.invalidateSize());
+    observer.observe(mapElementRef.current);
 
     return () => {
-      markerLayerRef.current?.clearLayers();
+      observer.disconnect();
       map.remove();
       mapRef.current = null;
       markerLayerRef.current = null;
     };
-  }, [positionedStores.length]);
+  }, []);
 
   useEffect(() => {
-    if (!markerLayerRef.current || !mapRef.current) {
-      return;
-    }
+    const map = mapRef.current;
+    const layer = markerLayerRef.current;
+    if (!map || !layer) return;
 
-    markerLayerRef.current.clearLayers();
-
-    for (const location of positionedStores) {
-      const isActive = location.store._id === selectedStoreId;
-      const isDimmed = Boolean(selectedStoreId) && !isActive;
-      const marker = L.marker([location.lat, location.lng], {
+    layer.clearLayers();
+    for (const store of availableStores) {
+      const isActive = store._id === selectedStoreId;
+      const marker = L.marker([store.mapLocation.lat, store.mapLocation.lng], {
+        title: store.name,
+        alt: store.name,
+        zIndexOffset: isActive ? 1000 : 0,
         icon: L.divIcon({
           className: 'locations_emoji_icon',
-          html: `<div class="locations_emoji_marker${isActive ? ' is-active' : ''}${isDimmed ? ' is-dimmed' : ''}">🥗</div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 28]
+          html: `<span class="locations_emoji_marker${isActive ? ' is-active' : selectedStoreId ? ' is-dimmed' : ''}">🥗</span>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18]
         })
       });
-
-      marker.on('click', () => setSelectedStoreId(location.store._id));
-      marker.bindTooltip(location.store.name, {
-        direction: 'top',
-        offset: [0, -20]
-      });
-      marker.addTo(markerLayerRef.current);
+      const label = document.createElement('span');
+      label.textContent = store.name;
+      marker.bindTooltip(label, { direction: 'top', offset: [0, -20], permanent: isActive });
+      marker.on('click', () => setSelectedStoreId(store._id));
+      marker.addTo(layer);
     }
 
-    const selectedLocation = positionedStores.find((location) => location.store._id === selectedStoreId);
-
-    if (selectedLocation) {
-      mapRef.current.setView([selectedLocation.lat, selectedLocation.lng], 14, {
-        animate: true
+    const selectedStore = availableStores.find((store) => store._id === selectedStoreId);
+    if (selectedStore) {
+      map.setView([selectedStore.mapLocation.lat, selectedStore.mapLocation.lng], 15, { animate: true });
+    } else {
+      map.fitBounds(L.latLngBounds(availableStores.map((store) => [store.mapLocation.lat, store.mapLocation.lng])), {
+        padding: [40, 40], maxZoom: 14
       });
-      return;
     }
-
-    const bounds = L.latLngBounds(positionedStores.map((location) => [location.lat, location.lng] as [number, number]));
-    mapRef.current.fitBounds(bounds, {
-      padding: [36, 36]
-    });
-  }, [positionedStores, selectedStoreId]);
+  }, [availableStores, selectedStoreId]);
 
   return (
     <div className="page locations-page" id="locations" ref={sectionRef}>
-      <h1 className="page_title">Locations</h1>
+      <h1 className="page_title">Salad Locations</h1>
       <div className="page_body">
         <div className="locations">
           <div className="locations_list_wrap">
             <p className="locations_subtitle">Where to find our Magic Kale Salads</p>
-            <button
-              className={!selectedStoreId ? 'locations_reset is-active' : 'locations_reset'}
-              onClick={() => setSelectedStoreId('')}
-              type="button"
-            >
+            <button className="locations_reset" onClick={() => setSelectedStoreId('')} type="button">
               All locations
             </button>
             <div className="locations_list" role="list">
               {availableStores.map((store) => (
-                <button
-                  className={selectedStoreId === store._id ? 'locations_list_item is-active' : 'locations_list_item'}
-                  key={store._id}
-                  onClick={() => setSelectedStoreId(store._id)}
-                  type="button"
-                >
-                  <span className="locations_list_name">{store.name}</span>
-                  <span className="locations_list_address">{store.pickupAddress}</span>
-                  {store.pickupNotes ? <small className="locations_list_notes">{store.pickupNotes}</small> : null}
-                </button>
+                <div key={store._id} role="listitem">
+                  <button
+                    className={`locations_list_item${selectedStoreId === store._id ? ' is-active' : ''}`}
+                    onClick={() => setSelectedStoreId(store._id)}
+                    aria-pressed={selectedStoreId === store._id}
+                    aria-controls="salad-locations-map"
+                    type="button"
+                  >
+                    <span className="locations_list_name">{store.name}</span>
+                    <span className="locations_list_address">{store.pickupAddress}</span>
+                    {store.pickupNotes ? <small className="locations_list_notes">{store.pickupNotes}</small> : null}
+                  </button>
+                </div>
               ))}
             </div>
           </div>
 
           <div className="locations_map">
-            {!positionedStores.length ? (
-              <div className="locations_empty">
-                <p>No store locations are ready for the map yet.</p>
-              </div>
-            ) : (
-              <div className="locations_map_frame">
-                <div className="locations_map_canvas" ref={mapElementRef} />
-              </div>
-            )}
+            <div className="locations_map_frame">
+              <div
+                className="locations_map_canvas"
+                id="salad-locations-map"
+                ref={mapElementRef}
+                aria-label="Salad store locations map"
+              />
+            </div>
           </div>
         </div>
       </div>

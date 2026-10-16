@@ -11,7 +11,7 @@ type NavBarProps = {
 
 const links = [
   { id: 'lets-eat', label: "Let's Eat", icon: LetsEatIcon },
-  // { id: 'locations', label: 'Locations', icon: LocationsIcon },
+  { id: 'locations', label: 'Salad Locations', icon: LocationsIcon },
   { id: 'travel', label: 'Travel', icon: TravelIcon },
   { id: 'contact', label: 'Contact', icon: ContactIcon }
 ];
@@ -45,11 +45,11 @@ function TravelIcon(props: IconProps) {
   return (
     <svg fill="none" viewBox="0 0 24 24" {...props}>
       <path
-        d="M4.5 14.4L10.2 12.9L18.8 6.6C19.4 6.2 20.1 6.2 20.5 6.8C20.9 7.3 20.8 8.1 20.2 8.5L11.7 14.7L12.8 20.4L10.8 21L8.3 15.8L3.9 17L3.2 15.1L7.6 13.8L6.5 9.2L8.5 8.6L10.6 13.1"
+        d="M12 3.25c.77 0 1.4.63 1.4 1.4v5.4l6.1 3.6v1.75l-6.1-1.7v4l2.1 1.4v1.3l-3.5-.95-3.5.95v-1.3l2.1-1.4v-4l-6.1 1.7v-1.75l6.1-3.6v-5.4c0-.77.63-1.4 1.4-1.4Z"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="1.8"
+        strokeWidth="1.6"
       />
     </svg>
   );
