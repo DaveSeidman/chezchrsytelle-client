@@ -16,7 +16,7 @@ export default function Home({ sectionRef }: HomeProps) {
               three growing children and <em>ChezChrystelle</em> is how we share our home with <strong>you!</strong>
             </p>
             <p>
-              During the pandemic we started offering homemade family dinners to friends and neighbors which they picked up in front of our stoop which grew into a weekly gathering and part of the community.
+              During the pandemic we started offering homemade family dinners to friends and neighbors which they picked up in front of our stoop and that grew into a weekly gathering and part of the community.
             </p>
           </div>
           <div className="home-section__image">

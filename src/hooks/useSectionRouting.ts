@@ -20,6 +20,8 @@ export function useSectionRouting(sectionIds: string[]) {
   const scrollTriggeredRoute = useRef(false);
   const nextScrollBehavior = useRef<ScrollBehavior>('auto');
   const animationFrame = useRef<number | null>(null);
+  const programmaticScroll = useRef(false);
+  const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function registerSection(sectionId: string) {
     return (element: HTMLElement | null) => {
@@ -28,6 +30,7 @@ export function useSectionRouting(sectionIds: string[]) {
   }
 
   function navigateToSection(sectionId: string) {
+    programmaticScroll.current = true;
     nextScrollBehavior.current = 'smooth';
     navigate(sectionPaths[sectionId] ?? '/');
   }
@@ -51,13 +54,23 @@ export function useSectionRouting(sectionIds: string[]) {
     initialLoad.current = false;
     nextScrollBehavior.current = 'auto';
 
-    window.requestAnimationFrame(() => {
+    programmaticScroll.current = true;
+    const frame = window.requestAnimationFrame(() => {
       element.scrollIntoView({ behavior, block: 'start' });
+      // Also release when the section was already in view and no scroll event fires.
+      if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+      scrollIdleTimer.current = setTimeout(() => {
+        programmaticScroll.current = false;
+      }, 180);
     });
-  }, [location.pathname]);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.pathname, location.key]);
 
   useEffect(() => {
     function updateActiveSection() {
+      if (programmaticScroll.current) return;
+
       let nextSection = activeSection;
       let closestDistance = Number.POSITIVE_INFINITY;
       const windowAnchor = window.innerHeight * 0.33;
@@ -88,6 +101,14 @@ export function useSectionRouting(sectionIds: string[]) {
     }
 
     function onScroll() {
+      if (programmaticScroll.current) {
+        // Keep the destination underlined while passing intermediate sections.
+        // The idle fallback also supports browsers without scrollend.
+        if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+        scrollIdleTimer.current = setTimeout(finishProgrammaticScroll, 180);
+        return;
+      }
+
       if (animationFrame.current) {
         window.cancelAnimationFrame(animationFrame.current);
       }
@@ -95,16 +116,44 @@ export function useSectionRouting(sectionIds: string[]) {
       animationFrame.current = window.requestAnimationFrame(updateActiveSection);
     }
 
+    function finishProgrammaticScroll() {
+      programmaticScroll.current = false;
+      if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+      scrollIdleTimer.current = null;
+    }
+
+    function onManualScroll() {
+      finishProgrammaticScroll();
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
+        onManualScroll();
+      }
+    }
+
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scrollend', finishProgrammaticScroll);
+    window.addEventListener('wheel', onManualScroll, { passive: true });
+    window.addEventListener('touchstart', onManualScroll, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scrollend', finishProgrammaticScroll);
+      window.removeEventListener('wheel', onManualScroll);
+      window.removeEventListener('touchstart', onManualScroll);
+      window.removeEventListener('keydown', onKeyDown);
 
       if (animationFrame.current) {
         window.cancelAnimationFrame(animationFrame.current);
       }
     };
   }, [activeSection, navigate, sectionIds]);
+
+  useEffect(() => () => {
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+  }, []);
 
   return {
     activeSection,
