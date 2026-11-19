@@ -18,7 +18,7 @@ export default function AppShell({ activeSection, children, onNavigate, onClient
       <main>{children}</main>
       <footer className="app-footer page-shell">
         <p className="app-footer__assurances">
-          Proud member of Made in NYC · NY State licensed (Article 20-C) · Produced under a HACCP food-safety plan ·
+          Proud member of <a href="https://www.madeinnyc.org/companies/chez-chrystelle">Made in NYC</a> · NY State licensed (Article 20-C) · Produced under a HACCP food-safety plan ·
           made in a regularly-inspected commercial kitchen · fully insured (COI on request) · Black, woman-owned
           business
         </p>
