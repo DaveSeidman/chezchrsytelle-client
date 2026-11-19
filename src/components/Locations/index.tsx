@@ -106,11 +106,11 @@ export default function Locations({ sectionRef, stores }: LocationsProps) {
 
   return (
     <div className="page locations-page" id="locations" ref={sectionRef}>
-      <h1 className="page_title">Salad Locations</h1>
+      <h1 className="page_title">Locations</h1>
       <div className="page_body">
         <div className="locations">
           <div className="locations_list_wrap">
-            <p className="locations_subtitle">Where to find our Magic Kale Salads</p>
+            <p className="locations_subtitle">Where to find Chez Chrystelle food</p>
             <button className="locations_reset" onClick={() => setSelectedStoreId('')} type="button">
               All locations
             </button>
@@ -139,7 +139,7 @@ export default function Locations({ sectionRef, stores }: LocationsProps) {
                 className="locations_map_canvas"
                 id="salad-locations-map"
                 ref={mapElementRef}
-                aria-label="Salad store locations map"
+                aria-label="Store locations map"
               />
             </div>
           </div>

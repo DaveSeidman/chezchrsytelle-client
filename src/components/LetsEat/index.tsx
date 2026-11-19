@@ -95,12 +95,9 @@ export default function LetsEat({ onContactReason, sectionRef }: LetsEatProps) {
             <div className="lets-eat_copy">
               <h2>Catering</h2>
               <p>
-                Chez Chrystelle is also building out catering for parties, office lunches, team gatherings, and other events
-                that need food with warmth, color, and a sense of occasion.
-              </p>
-              <p>
-                This section is still a placeholder for now, but it will eventually outline packages, serving formats, and how
-                to book us for larger meals.
+                We love to cater events of all sizes. We spend a lot of time beforehand getting to know your tastes and any
+                dietary restrictions, but we're also excited to take you and your guests beyond the foods you've enjoyed
+                before and introduce you to some bold new West African flavors!
               </p>
               <a className="lets-eat_cta" href="#contact" onClick={focusContactName('Plan catering')}>
                 Plan catering
